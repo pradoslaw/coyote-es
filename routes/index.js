@@ -10,7 +10,7 @@ router.get('/', [query('q').not().isEmpty().escape()], asyncHandler(async (req, 
   const result = await client.search({
     index: 'coyote',
     body: {
-      _source: ['model', "subject", "url", "forum"],
+      _source: ['model', 'subject', 'url', 'forum'],
       suggest: {
         all_suggestions: {
           prefix: req.query.q,
@@ -26,9 +26,9 @@ router.get('/', [query('q').not().isEmpty().escape()], asyncHandler(async (req, 
       }
     }});
 
-    console.log(`Response time for ${req.query.q}: ${result.body.took}`);
+    console.log(`Response time for "${req.query.q}": ${result.body.took}`);
 
-    res.json(result.body.suggest.all_suggestions);
+    res.json(result.body.suggest.all_suggestions[0].options);
 }));
 
 module.exports = router;

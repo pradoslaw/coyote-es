@@ -1,9 +1,9 @@
 import * as express from 'express';
 import asyncHandler from 'express-async-handler';
 import jwt from 'express-jwt';
-import { Client } from '@elastic/elasticsearch';
-import { query } from 'express-validator';
-import SuggestionsBuilder from '../models/suggestions';
+import {Client} from '@elastic/elasticsearch';
+import {query, validationResult} from 'express-validator';
+import {Model, SuggestionsBuilder} from '../builders/suggestions';
 
 const client = new Client({node: `http://${process.env.ELASTICSEARCH_HOST}:9200`});
 
@@ -15,8 +15,13 @@ class SuggestionController {
   }
 
   getSuggestions = asyncHandler(async (req: express.Request, res: express.Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
     // @ts-ignore
-    const params = new SuggestionsBuilder({prefix: req.query.q, userId: req.user?.iss}).build();
+    const params = new SuggestionsBuilder({prefix: req.query.q, userId: req.user?.iss, models: req.query?.model}).build();
     const result = await client.search(params);
 
     console.log(`Response time for "${req.query.q}": ${result.body.took} ms`);
@@ -42,6 +47,7 @@ class SuggestionController {
   private getHandlers() {
     return [
       query('q').not().isEmpty().escape(),
+      query('model').optional().isIn([Model.Topic, Model.Microblog, Model.Job]),
       jwt({secret: process.env.APP_KEY!, credentialsRequired: false})
     ];
   }

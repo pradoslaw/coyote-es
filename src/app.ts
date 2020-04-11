@@ -12,7 +12,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-import SuggestionController from './routes/suggestion';
+import SuggestionController from './routes/suggestions';
 import HubController from './routes/hub';
 
 app.use('/', new SuggestionController().router);

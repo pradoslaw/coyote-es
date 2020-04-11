@@ -52,14 +52,16 @@ export interface Option {
 export interface Source {
   model:                string;
   id:                   number;
-  score:                number;
-  replies:              number;
-  subject:              string;
-  last_post_created_at: Date;
+  score:                number | null;
+  replies:              number | null;
+  subject:              string | null;
+  title:                string | null;
+  salary:               number | null;
+  last_post_created_at: Date | null;
   url:                  string;
   user_id:              number | null;
-  forum:                Forum;
-  suggest:              SuggestElement[];
+  forum:                Forum | null;
+  suggest:              SuggestElement[] | null;
   participants:         number[];
   subscribers:          number[];
 }
@@ -83,4 +85,5 @@ export interface SuggestContexts {
 
 export interface OptionContexts {
   model: string[];
+  category: string[];
 }

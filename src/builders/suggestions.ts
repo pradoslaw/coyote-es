@@ -1,13 +1,5 @@
 import esb from 'elastic-builder';
-
-const INDEX_NAME = 'coyote';
-
-export enum Model {
-  Topic = 'Topic',
-  User = 'User',
-  Microblog = 'Microblog',
-  Job = 'Job'
-}
+import { Model } from '../models/model';
 
 interface SuggestionOptions {
   prefix: string;
@@ -48,7 +40,7 @@ export class SuggestionsBuilder {
     }
 
     return {
-      index: INDEX_NAME,
+      index: process.env.INDEX,
       body: {
         _source: ['id', 'model', 'subject', 'url', 'forum'],
         suggest: suggest.toJSON()

@@ -3,7 +3,9 @@ import asyncHandler from 'express-async-handler';
 import jwt from 'express-jwt';
 import {Client} from '@elastic/elasticsearch';
 import {query, validationResult} from 'express-validator';
-import {Model, SuggestionsBuilder} from '../builders/suggestions';
+import { SuggestionsBuilder } from '../builders/suggestions';
+import * as elasticsearch from '../models/elasticsearch';
+import { Model } from '../models/model';
 
 const client = new Client({node: `http://${process.env.ELASTICSEARCH_HOST}:9200`});
 
@@ -24,12 +26,13 @@ class SuggestionController {
     const params = new SuggestionsBuilder({prefix: req.query.q, userId: req.user?.iss, models: req.query?.model}).build();
     const result = await client.search(params);
 
-    console.log(`Response time for "${req.query.q}": ${result.body.took} ms`);
+    const body: elasticsearch.ElasticsearchResult = result.body;
+
+    console.log(`Response time for "${req.query.q}": ${body.took} ms`);
 
     let output: any[] = [];
 
-    for (const suggestions of Object.values(result.body.suggest)) {
-      // @ts-ignore
+    for (const suggestions of Object.values(body.suggest)) {
       let options = suggestions[0].options;
 
       for (const option of options) {

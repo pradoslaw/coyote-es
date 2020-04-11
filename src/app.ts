@@ -13,8 +13,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 import SuggestionController from './routes/suggestion';
+import HubController from './routes/hub';
 
 app.use('/', new SuggestionController().router);
+app.use('/hub', new HubController().router);
 
 const server = app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`));
 

@@ -12,7 +12,7 @@ export default class HubController {
   public router = express.Router();
 
   constructor() {
-    this.router.get('/hub', this.getHandlers(), this.getSuggestions);
+    this.router.get('/', this.getHandlers(), this.getSuggestions);
   }
 
   getSuggestions = asyncHandler(async (req: express.Request, res: express.Response) => {

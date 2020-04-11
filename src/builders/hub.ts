@@ -11,10 +11,10 @@ export default class HubBuilder {
   build() {
     return {
       index: process.env.INDEX,
-      body: {
-        // _source: ['id', 'model', 'subject', 'url', 'forum'],
-        suggest: this.body().toJSON()
-      }
+      body: Object.assign(
+        {_source: ['id', 'model', 'subject', 'url', 'forum', 'title', 'salary']},
+        this.body().toJSON()
+      )
     }
   }
 
@@ -27,8 +27,8 @@ export default class HubBuilder {
               .must(new esb.TermsQuery('model', Object.values(Model)))
               .should([
                 new esb.TermQuery('user_id', this.userId),
-                new esb.TermQuery('subscriber', this.userId),
-                new esb.TermQuery('participant', this.userId)
+                new esb.TermQuery('subscribers', this.userId),
+                new esb.TermQuery('participants', this.userId)
               ])
               .minimumShouldMatch('50%')
           )

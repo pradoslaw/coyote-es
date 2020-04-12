@@ -28,7 +28,7 @@ class SuggestionsBuilder {
         return {
             index: process.env.INDEX,
             body: {
-                _source: ['id', 'model', 'subject', 'url', 'forum'],
+                _source: ['id', 'model', 'subject', 'url', 'forum', 'subscribers', 'participants', 'user_id'],
                 suggest: suggest.toJSON()
             }
         };

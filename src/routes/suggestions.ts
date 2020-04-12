@@ -22,14 +22,16 @@ export default class SuggestionController {
     }
 
     // @ts-ignore
-    const params = new SuggestionsBuilder({prefix: req.query.q, userId: req.user?.iss, models: req.query?.model}).build();
+    const userId = req.user ? parseInt(req.user.iss) : null;
+
+    const params = new SuggestionsBuilder({prefix: req.query.q, userId, models: req.query?.model}).build();
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;
 
     console.log(`Response time for "${req.query.q}": ${body.took} ms`);
 
-    res.send(transform(body));
+    res.send(transform(body, userId));
   });
 
   private getHandlers() {

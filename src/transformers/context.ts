@@ -5,13 +5,14 @@ import {Context} from '../models/context';
 interface ContextStrategy {
   readonly context: Context;
 
-  establish(hit: Hit, userId?: number): boolean;
+  establish(hit: Hit, userId: number | null): boolean;
 }
 
 class UserTopicContext implements ContextStrategy {
   readonly context: Context = Context.UserTopic;
 
-  establish(hit: Hit, userId?: number): boolean {
+  establish(hit: Hit, userId: number | null): boolean {
+    // hit.suggest
     return userId ? hit.user_id === userId && hit.model == Model.Topic : false;
   }
 }
@@ -19,7 +20,7 @@ class UserTopicContext implements ContextStrategy {
 class UserJobContext implements ContextStrategy {
   readonly context: Context = Context.UserJob;
 
-  establish(hit: Hit, userId?: number): boolean {
+  establish(hit: Hit, userId: number | null): boolean {
     return userId ? hit.user_id === userId && hit.model == Model.Job : false;
   }
 }
@@ -27,7 +28,7 @@ class UserJobContext implements ContextStrategy {
 class SubscribedTopicContext implements ContextStrategy {
   readonly context: Context = Context.SubscribedTopic;
 
-  establish(hit: Hit, userId?: number): boolean {
+  establish(hit: Hit, userId: number | null): boolean {
     return userId && hit.model === Model.Topic ? hit.subscribers.includes(userId) : false;
   }
 }
@@ -35,7 +36,7 @@ class SubscribedTopicContext implements ContextStrategy {
 class SubscribedJobContext implements ContextStrategy {
   readonly context: Context = Context.SubscribedJob;
 
-  establish(hit: Hit, userId?: number): boolean {
+  establish(hit: Hit, userId: number | null): boolean {
     return userId && hit.model === Model.Job ? hit.subscribers.includes(userId) : false;
   }
 }
@@ -43,7 +44,7 @@ class SubscribedJobContext implements ContextStrategy {
 class ParticipantTopicContext implements ContextStrategy {
   readonly context: Context = Context.ParticipantTopic;
 
-  establish(hit: Hit, userId?: number): boolean {
+  establish(hit: Hit, userId: number | null): boolean {
     return userId && hit.model === Model.Topic ? hit.participants.includes(userId) : false;
   }
 }
@@ -51,7 +52,7 @@ class ParticipantTopicContext implements ContextStrategy {
 class TopicContext implements ContextStrategy {
   readonly context: Context = Context.Topic;
 
-  establish(hit: Hit, userId?: number): boolean {
+  establish(hit: Hit, userId: number | null): boolean {
     return hit.model === Model.Topic;
   }
 }
@@ -59,16 +60,16 @@ class TopicContext implements ContextStrategy {
 class JobContext implements ContextStrategy {
   readonly context: Context = Context.Job;
 
-  establish(hit: Hit, userId?: number): boolean {
+  establish(hit: Hit, userId: number | null): boolean {
     return hit.model === Model.Job;
   }
 }
 
 class ContextManager {
   private strategies: ContextStrategy[] = [];
-  private readonly userId: number | undefined;
+  private readonly userId: number | null;
 
-  constructor(userId?: number) {
+  constructor(userId: number | null) {
     this.userId = userId;
   }
 
@@ -92,7 +93,7 @@ class ContextManager {
 }
 
 export default class ContextFactory {
-  static make(userId: number) {
+  static make(userId: number | null) {
     return new ContextManager(userId)
       .addStrategy(new UserTopicContext())
       .addStrategy(new ParticipantTopicContext())

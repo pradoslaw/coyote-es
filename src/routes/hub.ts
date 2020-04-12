@@ -21,12 +21,14 @@ export default class HubController {
     }
 
     // @ts-ignore
-    const params = new HubBuilder(req.user.iss).build();
+    const userId: number = parseInt(req.user.iss);
+
+    const params = new HubBuilder(userId).build();
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;
 
-    res.send(transform(body));
+    res.send(transform(body, userId));
   });
 
   private getHandlers() {

@@ -12,7 +12,7 @@ export default class HubBuilder {
     return {
       index: process.env.INDEX,
       body: Object.assign(
-        {_source: ['id', 'model', 'subject', 'url', 'forum', 'title', 'salary']},
+        {_source: ['id', 'model', 'subject', 'url', 'forum', 'title', 'salary', 'subscribers', 'participants', 'user_id']},
         this.body().toJSON()
       )
     }

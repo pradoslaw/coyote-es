@@ -6,11 +6,6 @@ import {ElasticsearchResult} from "../models/elasticsearch";
 const getOptions = (suggestions: elasticsearch.Suggestion[]): Hit[] => {
   let result: Hit[] = [];
 
-
-  // const context = (contexts: elasticsearch.OptionContexts) => {
-  //   return {context: contexts.category ? contexts.category[0] : contexts.model[0]};
-  // }
-
   for (const suggestion of suggestions) {
     for (const option of suggestion.options) {
       result.push(<Hit> Object.assign(option._source, {_score: option._score}));
@@ -25,8 +20,12 @@ export default (result: ElasticsearchResult, userId: number | null): Hit[] => {
   let hits: Hit[] = [...getOptions(result.suggest.user_suggestions), ...getOptions(result.suggest.all_suggestions)];
 
   return hits.map(hit => {
-    // let resultHit:Hit = hit._source;
+    context.setContext(hit);
 
-    return context.setContext(hit);
+    // remove large amount of data to minimize JSON
+    delete hit.participants;
+    delete hit.subscribers;
+
+    return hit;
   });
 };

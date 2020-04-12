@@ -6,9 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const context_1 = __importDefault(require("./context"));
 const getOptions = (suggestions) => {
     let result = [];
-    // const context = (contexts: elasticsearch.OptionContexts) => {
-    //   return {context: contexts.category ? contexts.category[0] : contexts.model[0]};
-    // }
     for (const suggestion of suggestions) {
         for (const option of suggestion.options) {
             result.push(Object.assign(option._source, { _score: option._score }));
@@ -20,7 +17,10 @@ exports.default = (result, userId) => {
     const context = context_1.default.make(userId);
     let hits = [...getOptions(result.suggest.user_suggestions), ...getOptions(result.suggest.all_suggestions)];
     return hits.map(hit => {
-        // let resultHit:Hit = hit._source;
-        return context.setContext(hit);
+        context.setContext(hit);
+        // remove large amount of data to minimize JSON
+        delete hit.participants;
+        delete hit.subscribers;
+        return hit;
     });
 };

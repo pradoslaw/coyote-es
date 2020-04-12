@@ -8,6 +8,10 @@ exports.default = (result, userId) => {
     const context = context_1.default.make(userId);
     return result.hits.hits.map(hit => {
         let resultHit = hit._source;
-        return context.setContext(resultHit);
+        context.setContext(resultHit);
+        // remove large amount of data to minimize JSON
+        delete resultHit.participants;
+        delete resultHit.subscribers;
+        return resultHit;
     });
 };

@@ -1,6 +1,6 @@
 export enum Context {
-  Topic = 'Topic',
-  Job = 'Job',
+  Topic = 'topic',
+  Job = 'job',
   UserTopic = 'user_topic',
   SubscribedTopic = 'subscribed_topic',
   ParticipantTopic = 'participant_topic',

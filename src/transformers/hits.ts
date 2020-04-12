@@ -9,7 +9,12 @@ export default (result: elasticsearch.ElasticsearchResult, userId: number) => {
   return result.hits.hits.map(hit => {
     let resultHit:Hit = hit._source;
 
-    return context.setContext(resultHit);
+    context.setContext(resultHit);
+
+    // remove large amount of data to minimize JSON
+    delete resultHit.participants;
+    delete resultHit.subscribers;
+
+    return resultHit;
   });
 }
-;

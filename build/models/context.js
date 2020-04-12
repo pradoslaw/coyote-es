@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Context;
 (function (Context) {
-    Context["Topic"] = "Topic";
-    Context["Job"] = "Job";
+    Context["Topic"] = "topic";
+    Context["Job"] = "job";
     Context["UserTopic"] = "user_topic";
     Context["SubscribedTopic"] = "subscribed_topic";
     Context["ParticipantTopic"] = "participant_topic";

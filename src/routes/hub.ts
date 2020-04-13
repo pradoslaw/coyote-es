@@ -2,7 +2,7 @@ import * as express from "express";
 import asyncHandler from "express-async-handler";
 import {validationResult} from "express-validator";
 import HubBuilder from "../builders/hub";
-import { ElasticsearchResult } from "../models/elasticsearch";
+import { ElasticsearchResult } from "../types/elasticsearch";
 import jwt from "express-jwt";
 import client from '../elasticsearch';
 import transform from '../transformers/hits';

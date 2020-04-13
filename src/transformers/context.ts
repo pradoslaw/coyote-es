@@ -1,6 +1,6 @@
-import Hit from "../models/hit";
-import {Model} from '../models/model';
-import {Context} from '../models/context';
+import Hit from "../types/hit";
+import {Model} from '../types/model';
+import {Context} from '../types/context';
 
 interface ContextStrategy {
   readonly context: Context;

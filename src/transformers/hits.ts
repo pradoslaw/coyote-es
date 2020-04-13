@@ -1,6 +1,6 @@
-import * as elasticsearch from "../models/elasticsearch";
+import * as elasticsearch from "../types/elasticsearch";
 import ContextFactory from "./context";
-import Hit from '../models/hit';
+import Hit from '../types/hit';
 
 
 export default (result: elasticsearch.ElasticsearchResult, userId: number) => {

@@ -1,5 +1,5 @@
 import esb from 'elastic-builder';
-import { Model } from '../models/model';
+import { Model } from '../types/model';
 
 export default class HubBuilder {
   private readonly userId: number;

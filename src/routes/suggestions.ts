@@ -4,8 +4,8 @@ import jwt from 'express-jwt';
 import client from '../elasticsearch';
 import {query, validationResult} from 'express-validator';
 import { SuggestionsBuilder } from '../builders/suggestions';
-import { ElasticsearchResult } from '../models/elasticsearch';
-import { Model } from '../models/model';
+import { ElasticsearchResult } from '../types/elasticsearch';
+import { Model } from '../types/model';
 import transform from "../transformers/suggestions";
 
 export default class SuggestionController {

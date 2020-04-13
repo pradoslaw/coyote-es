@@ -1,7 +1,7 @@
-import * as elasticsearch from "../models/elasticsearch";
-import Hit from '../models/hit';
+import * as elasticsearch from "../types/elasticsearch";
+import Hit from '../types/hit';
 import ContextFactory from "./context";
-import {ElasticsearchResult} from "../models/elasticsearch";
+import {ElasticsearchResult} from "../types/elasticsearch";
 
 const getOptions = (suggestions: elasticsearch.Suggestion[]): Hit[] => {
   let result: Hit[] = [];

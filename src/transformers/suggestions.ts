@@ -17,15 +17,22 @@ const getOptions = (suggestions: elasticsearch.Suggestion[]): Hit[] => {
 
 export default (result: ElasticsearchResult, userId: number | null): Hit[] => {
   const context = ContextFactory.make(userId);
-  let hits: Hit[] = [...getOptions(result.suggest.user_suggestions), ...getOptions(result.suggest.all_suggestions)];
 
-  return hits.map(hit => {
-    context.setContext(hit);
+  return [...getOptions(result.suggest.user_suggestions), ...getOptions(result.suggest.all_suggestions)]
+    .reduce((filtered: Hit[], current) => {
+      if (!filtered.some(x => x.id == current.id)) {
+        filtered.push(current);
+      }
 
-    // remove large amount of data to minimize JSON
-    delete hit.participants;
-    delete hit.subscribers;
+      return filtered;
+    }, [])
+    .map(hit => {
+      context.setContext(hit);
 
-    return hit;
-  });
+      // remove large amount of data to minimize JSON
+      delete hit.participants;
+      delete hit.subscribers;
+
+      return hit;
+    });
 };

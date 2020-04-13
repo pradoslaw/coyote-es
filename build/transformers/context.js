@@ -7,6 +7,7 @@ class UserTopicContext {
         this.context = context_1.Context.UserTopic;
     }
     establish(hit, userId) {
+        // hit.suggest
         return userId ? hit.user_id === userId && hit.model == model_1.Model.Topic : false;
     }
 }
@@ -58,6 +59,14 @@ class JobContext {
         return hit.model === model_1.Model.Job;
     }
 }
+class UserContext {
+    constructor() {
+        this.context = context_1.Context.User;
+    }
+    establish(hit, userId) {
+        return hit.model === model_1.Model.User;
+    }
+}
 class ContextManager {
     constructor(userId) {
         this.strategies = [];
@@ -86,7 +95,8 @@ class ContextFactory {
             .addStrategy(new UserJobContext())
             .addStrategy(new SubscribedJobContext())
             .addStrategy(new TopicContext())
-            .addStrategy(new JobContext());
+            .addStrategy(new JobContext())
+            .addStrategy(new UserContext());
     }
 }
 exports.default = ContextFactory;

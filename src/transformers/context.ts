@@ -65,6 +65,14 @@ class JobContext implements ContextStrategy {
   }
 }
 
+class UserContext implements ContextStrategy {
+  readonly context: Context = Context.User;
+
+  establish(hit: Hit, userId: number | null): boolean {
+    return hit.model === Model.User;
+  }
+}
+
 class ContextManager {
   private strategies: ContextStrategy[] = [];
   private readonly userId: number | null;
@@ -102,5 +110,6 @@ export default class ContextFactory {
       .addStrategy(new SubscribedJobContext())
       .addStrategy(new TopicContext())
       .addStrategy(new JobContext())
+      .addStrategy(new UserContext())
   }
 }

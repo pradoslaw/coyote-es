@@ -15,8 +15,14 @@ const getOptions = (suggestions) => {
 };
 exports.default = (result, userId) => {
     const context = context_1.default.make(userId);
-    let hits = [...getOptions(result.suggest.user_suggestions), ...getOptions(result.suggest.all_suggestions)];
-    return hits.map(hit => {
+    return [...getOptions(result.suggest.user_suggestions), ...getOptions(result.suggest.all_suggestions)]
+        .reduce((filtered, current) => {
+        if (!filtered.some(x => x.id == current.id)) {
+            filtered.push(current);
+        }
+        return filtered;
+    }, [])
+        .map(hit => {
         context.setContext(hit);
         // remove large amount of data to minimize JSON
         delete hit.participants;

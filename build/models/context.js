@@ -4,6 +4,7 @@ var Context;
 (function (Context) {
     Context["Topic"] = "topic";
     Context["Job"] = "job";
+    Context["User"] = "user";
     Context["UserTopic"] = "user_topic";
     Context["SubscribedTopic"] = "subscribed_topic";
     Context["ParticipantTopic"] = "participant_topic";

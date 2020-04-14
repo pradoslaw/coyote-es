@@ -1,5 +1,4 @@
 import Hit from "../types/hit";
-import {Model} from '../types/model';
 import {Context} from '../types/context';
 
 interface ContextStrategy {
@@ -8,68 +7,27 @@ interface ContextStrategy {
   establish(hit: Hit, userId: number | null): boolean;
 }
 
-class UserTopicContext implements ContextStrategy {
-  readonly context: Context = Context.UserTopic;
-
-  establish(hit: Hit, userId: number | null): boolean {
-    // hit.suggest
-    return userId ? hit.user_id === userId && hit.model == Model.Topic : false;
-  }
-}
-
-class UserJobContext implements ContextStrategy {
-  readonly context: Context = Context.UserJob;
-
-  establish(hit: Hit, userId: number | null): boolean {
-    return userId ? hit.user_id === userId && hit.model == Model.Job : false;
-  }
-}
-
-class SubscribedTopicContext implements ContextStrategy {
-  readonly context: Context = Context.SubscribedTopic;
-
-  establish(hit: Hit, userId: number | null): boolean {
-    return userId && hit.model === Model.Topic ? hit.subscribers.includes(userId) : false;
-  }
-}
-
-class SubscribedJobContext implements ContextStrategy {
-  readonly context: Context = Context.SubscribedJob;
-
-  establish(hit: Hit, userId: number | null): boolean {
-    return userId && hit.model === Model.Job ? hit.subscribers.includes(userId) : false;
-  }
-}
-
-class ParticipantTopicContext implements ContextStrategy {
-  readonly context: Context = Context.ParticipantTopic;
-
-  establish(hit: Hit, userId: number | null): boolean {
-    return userId && hit.model === Model.Topic ? hit.participants.includes(userId) : false;
-  }
-}
-
-class TopicContext implements ContextStrategy {
-  readonly context: Context = Context.Topic;
-
-  establish(hit: Hit, userId: number | null): boolean {
-    return hit.model === Model.Topic;
-  }
-}
-
-class JobContext implements ContextStrategy {
-  readonly context: Context = Context.Job;
-
-  establish(hit: Hit, userId: number | null): boolean {
-    return hit.model === Model.Job;
-  }
-}
-
 class UserContext implements ContextStrategy {
   readonly context: Context = Context.User;
 
   establish(hit: Hit, userId: number | null): boolean {
-    return hit.model === Model.User;
+    return userId ? hit.user_id === userId : false;
+  }
+}
+
+class SubscriberContext implements ContextStrategy {
+  readonly context: Context = Context.Subscriber;
+
+  establish(hit: Hit, userId: number | null): boolean {
+    return userId && Array.isArray(hit.subscribers) ? hit.subscribers.includes(userId) : false;
+  }
+}
+
+class ParticipantContext implements ContextStrategy {
+  readonly context: Context = Context.Participant;
+
+  establish(hit: Hit, userId: number | null): boolean {
+    return userId && Array.isArray(hit.participants) ? hit.participants.includes(userId) : false;
   }
 }
 
@@ -103,13 +61,8 @@ class ContextManager {
 export default class ContextFactory {
   static make(userId: number | null) {
     return new ContextManager(userId)
-      .addStrategy(new UserTopicContext())
-      .addStrategy(new ParticipantTopicContext())
-      .addStrategy(new SubscribedTopicContext())
-      .addStrategy(new UserJobContext())
-      .addStrategy(new SubscribedJobContext())
-      .addStrategy(new TopicContext())
-      .addStrategy(new JobContext())
       .addStrategy(new UserContext())
+      .addStrategy(new ParticipantContext())
+      .addStrategy(new SubscriberContext());
   }
 }

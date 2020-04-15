@@ -2,5 +2,6 @@ export enum Model {
   Topic = 'Topic',
   User = 'User',
   Microblog = 'Microblog',
-  Job = 'Job'
+  Job = 'Job',
+  Wiki = 'Wiki'
 }

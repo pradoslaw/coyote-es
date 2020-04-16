@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node src/app.ts",
+    "start": "node -r ts-node/register src/app.ts",
     "tsc": "tsc",
     "test": "jest"
   },

@@ -2,13 +2,8 @@ version: '3.5'
 
 services:
   es:
-    image: node:13-alpine
-    working_dir: /app/build
-    command:
-    - "node"
-    - "-r"
-    - "ts-node/register"
-    - "/app/src/app.ts"
+    build:
+      context: .
     ports:
       - 3500:3500
     volumes:

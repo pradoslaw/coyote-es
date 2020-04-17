@@ -1,9 +1,8 @@
 import express = require('express');
 const logger = require('morgan');
-
 import dotenv from 'dotenv';
 
-dotenv.config({path: '../.env'});
+dotenv.config({path: '.env'});
 
 // Create a new express application instance
 const app: express.Application = express();

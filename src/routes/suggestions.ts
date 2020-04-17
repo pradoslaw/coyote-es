@@ -37,7 +37,7 @@ export default class SuggestionController {
   private getHandlers() {
     return [
       query('q').not().isEmpty().escape(),
-      query('model').optional().isIn([Model.Topic, Model.Microblog, Model.Job]),
+      query('model').optional().isIn([Model.Topic, Model.Job, Model.Wiki, Model.User]),
       jwt({secret: process.env.APP_KEY!, credentialsRequired: false})
     ];
   }

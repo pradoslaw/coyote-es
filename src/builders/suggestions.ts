@@ -49,7 +49,7 @@ export class SuggestionsBuilder {
   }
 
   private setDefaults() {
-    this.options.models = this.options.models || [Model.Topic, Model.Job, Model.Microblog, Model.User];
+    this.options.models = this.options.models || [Model.Topic, Model.Job, Model.Wiki, Model.User];
   }
 
   private allSuggestions() {

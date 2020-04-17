@@ -3,8 +3,12 @@ import Hit from '../types/hit';
 import ContextFactory from "./context";
 import {ElasticsearchResult} from "../types/elasticsearch";
 
-const getOptions = (suggestions: elasticsearch.Suggestion[]): Hit[] => {
+const getOptions = (suggestions: elasticsearch.Suggestion[] | null): Hit[] => {
   let result: Hit[] = [];
+
+  if (!suggestions) {
+    return result;
+  }
 
   for (const suggestion of suggestions) {
     for (const option of suggestion.options) {
@@ -18,7 +22,7 @@ const getOptions = (suggestions: elasticsearch.Suggestion[]): Hit[] => {
 export default (result: ElasticsearchResult, userId: number | null): Hit[] => {
   const context = ContextFactory.make(userId);
 
-  return [...getOptions(result.suggest.user_suggestions), ...getOptions(result.suggest.all_suggestions)]
+  return [...getOptions(result.suggest?.user_suggestions), ...getOptions(result.suggest.all_suggestions)]
     .reduce((filtered: Hit[], current) => {
       if (!filtered.some(x => x.id == current.id)) {
         filtered.push(current);

@@ -2,11 +2,11 @@ import * as express from 'express';
 import asyncHandler from 'express-async-handler';
 import jwt from 'express-jwt';
 import client from '../elasticsearch';
-import {query, validationResult} from 'express-validator';
+import { query, validationResult } from 'express-validator';
 import { SuggestionsBuilder } from '../builders/suggestions';
 import { ElasticsearchResult } from '../types/elasticsearch';
-import { Model } from '../types/model';
 import transform from "../transformers/suggestions";
+import { Model } from"../types/model";
 
 export default class SuggestionController {
   public router = express.Router();
@@ -21,8 +21,13 @@ export default class SuggestionController {
       return res.status(422).json({errors: errors.array()});
     }
 
-    // @ts-ignore
-    const userId = req.user ? parseInt(req.user.iss) : null;
+    if (req.user) {
+      // make sure user id is really int
+      // @todo code duplicated along routes
+      req.user.iss = parseInt(String(req.user.iss));
+    }
+
+    const userId = req.user ? req.user.iss : null;
 
     const params = new SuggestionsBuilder({prefix: req.query.q, userId, models: req.query?.model}).build();
     const result = await client.search(params);
@@ -31,7 +36,7 @@ export default class SuggestionController {
 
     console.log(`Response time for "${req.query.q}": ${body.took} ms`);
 
-    res.send(transform(body, userId));
+    res.send(transform(body, req.user));
   });
 
   private getHandlers() {

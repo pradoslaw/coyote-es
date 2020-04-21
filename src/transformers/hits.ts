@@ -1,19 +1,23 @@
 import * as elasticsearch from "../types/elasticsearch";
 import ContextFactory from "./context";
 import Hit from '../types/hit';
+import prohibited from "./prohibited";
 
-export default (result: elasticsearch.ElasticsearchResult, userId: number) => {
-  const context = ContextFactory.make(userId);
 
-  return result.hits.hits.map(hit => {
-    let resultHit:Hit = hit._source;
+export default (result: elasticsearch.ElasticsearchResult, user: Jwt) => {
+  const context = ContextFactory.make(user.iss!);
 
-    context.setContext(resultHit);
+  return result.hits.hits
+    .map(hit => {
+      let resultHit:Hit = hit._source;
 
-    // remove large amount of data to minimize JSON
-    delete resultHit.participants;
-    delete resultHit.subscribers;
+      context.setContext(resultHit);
 
-    return resultHit;
-  });
+      // remove large amount of data to minimize JSON
+      delete resultHit.participants;
+      delete resultHit.subscribers;
+
+      return resultHit;
+    })
+    .filter(hit => prohibited(hit, user))
 }

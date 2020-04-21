@@ -1,7 +1,7 @@
 import * as elasticsearch from "../types/elasticsearch";
 import Hit from '../types/hit';
 import ContextFactory from "./context";
-import {ElasticsearchResult} from "../types/elasticsearch";
+import { ElasticsearchResult } from "../types/elasticsearch";
 
 const getOptions = (suggestions: elasticsearch.Suggestion[] | null): Hit[] => {
   let result: Hit[] = [];
@@ -19,8 +19,8 @@ const getOptions = (suggestions: elasticsearch.Suggestion[] | null): Hit[] => {
   return result;
 };
 
-export default (result: ElasticsearchResult, userId: number | null): Hit[] => {
-  const context = ContextFactory.make(userId);
+export default (result: ElasticsearchResult, user: Jwt | undefined): Hit[] => {
+  const context = ContextFactory.make(user?.iss ?? null);
 
   return [...getOptions(result.suggest?.user_suggestions), ...getOptions(result.suggest.all_suggestions)]
     .reduce((filtered: Hit[], current) => {

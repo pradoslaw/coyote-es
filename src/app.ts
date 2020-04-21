@@ -10,6 +10,11 @@ const app: express.Application = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+// app.use((req: express.Request, res: express.Response, next) => {
+
+//
+//   next();
+// })
 
 import SuggestionController from './routes/suggestions';
 import HubController from './routes/hub';

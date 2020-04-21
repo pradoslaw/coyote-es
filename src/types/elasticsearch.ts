@@ -71,6 +71,7 @@ export interface Forum {
   name: string;
   slug: string;
   url:  string;
+  is_prohibited: boolean;
 }
 
 export interface SuggestElement {

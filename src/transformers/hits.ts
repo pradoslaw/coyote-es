@@ -18,5 +18,5 @@ export default (result: elasticsearch.ElasticsearchResult, user: Jwt) => {
 
       return resultHit;
     })
-    .filter(hit => guarded(hit, user));
+    .filter(hit => !guarded(hit, user));
 }

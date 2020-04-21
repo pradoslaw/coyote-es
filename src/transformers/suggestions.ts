@@ -2,6 +2,7 @@ import * as elasticsearch from "../types/elasticsearch";
 import Hit from '../types/hit';
 import ContextFactory from "./context";
 import { ElasticsearchResult } from "../types/elasticsearch";
+import guarded from "./guarded";
 
 const getOptions = (suggestions: elasticsearch.Suggestion[] | null): Hit[] => {
   let result: Hit[] = [];
@@ -38,5 +39,6 @@ export default (result: ElasticsearchResult, user: Jwt | undefined): Hit[] => {
       delete hit.subscribers;
 
       return hit;
-    });
+    })
+    .filter(hit => guarded(hit, user));
 };

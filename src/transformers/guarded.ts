@@ -6,5 +6,5 @@ export default (hit: Hit, user?: Jwt): boolean => {
     return true;
   }
 
-  return user ? user.prohibited.includes(hit.forum.id) : false;
+  return user ? user.guarded.includes(hit.forum.id) : false;
 }

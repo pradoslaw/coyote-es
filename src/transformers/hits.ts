@@ -1,8 +1,7 @@
 import * as elasticsearch from "../types/elasticsearch";
 import ContextFactory from "./context";
 import Hit from '../types/hit';
-import prohibited from "./prohibited";
-
+import guarded from "./guarded";
 
 export default (result: elasticsearch.ElasticsearchResult, user: Jwt) => {
   const context = ContextFactory.make(user.iss!);
@@ -19,5 +18,5 @@ export default (result: elasticsearch.ElasticsearchResult, user: Jwt) => {
 
       return resultHit;
     })
-    .filter(hit => prohibited(hit, user))
+    .filter(hit => guarded(hit, user));
 }

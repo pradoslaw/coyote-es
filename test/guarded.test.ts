@@ -1,5 +1,6 @@
 import guarded from "../src/transformers/guarded";
 import Hit from "../src/types/hit";
+import { Model } from "../src/types/model";
 
 const h = (): Hit => ({
   forum: {
@@ -11,7 +12,7 @@ const h = (): Hit => ({
   },
   id: 1,
   last_post_created_at: null,
-  model: "",
+  model: Model.Topic,
   participants: [1],
   replies: 0,
   subject: 'test',
@@ -24,9 +25,22 @@ const h = (): Hit => ({
   salary: null
 });
 
-test('remove guarded', () => {
+test('remove guarded result', () => {
   const hit = h();
   const jwt: Jwt = {iss: 1, guarded: [1]};
 
   expect(guarded(hit, jwt)).toBeTruthy();
+});
+
+test('keep guarded result if user is authorized', () => {
+  const hit = h();
+  const jwt: Jwt = {iss: 1, guarded: []};
+
+  expect(guarded(hit, jwt)).toBeFalsy();
+});
+
+test('remove guarded result when user is undefined', () => {
+  const hit = h();
+
+  expect(guarded(hit)).toBeTruthy();
 });

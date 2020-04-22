@@ -39,6 +39,13 @@ test('keep guarded result if user is authorized', () => {
   expect(guarded(hit, jwt)).toBeFalsy();
 });
 
+test('keep guarded result if user is not authorized to different forum', () => {
+  const hit = h();
+  const jwt: Jwt = {iss: 1, guarded: [2]};
+
+  expect(guarded(hit, jwt)).toBeFalsy();
+});
+
 test('remove guarded result when user is undefined', () => {
   const hit = h();
 

@@ -1,8 +1,15 @@
 import express = require('express');
 const logger = require('morgan');
+const fs = require('fs');
+
 import dotenv from 'dotenv';
 
 dotenv.config({path: '.env'});
+
+if (process.env.APP_KEY_FILE) {
+  const data = fs.readFileSync(process.env.APP_KEY_FILE);
+  process.env["APP_KEY"] = data.toString().trim();
+}
 
 // Create a new express application instance
 const app: express.Application = express();

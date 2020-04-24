@@ -1,4 +1,4 @@
 interface Jwt {
   iss: number;
-  guarded: number[];
+  allowed: number[];
 }

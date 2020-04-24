@@ -2,7 +2,7 @@ import * as elasticsearch from "../types/elasticsearch";
 import Hit from '../types/hit';
 import ContextFactory from "./context";
 import { ElasticsearchResult } from "../types/elasticsearch";
-import guarded from "./guarded";
+import allowed from "./allowed";
 
 const getOptions = (suggestions: elasticsearch.Suggestion[] | null): Hit[] => {
   let result: Hit[] = [];
@@ -40,5 +40,5 @@ export default (result: ElasticsearchResult, user: Jwt | undefined): Hit[] => {
 
       return hit;
     })
-    .filter(hit => !guarded(hit, user));
+    .filter(hit => allowed(hit, user));
 };

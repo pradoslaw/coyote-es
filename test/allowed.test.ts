@@ -1,4 +1,4 @@
-import guarded from "../src/transformers/guarded";
+import allowed from "../src/transformers/allowed";
 import Hit from "../src/types/hit";
 import { Model } from "../src/types/model";
 
@@ -25,29 +25,29 @@ const h = (): Hit => ({
   salary: null
 });
 
-test('remove guarded result', () => {
+test('keep allowed result', () => {
   const hit = h();
-  const jwt: Jwt = {iss: 1, guarded: [1]};
+  const jwt: Jwt = {iss: 1, allowed: [1]};
 
-  expect(guarded(hit, jwt)).toBeTruthy();
+  expect(allowed(hit, jwt)).toBeTruthy();
 });
 
-test('keep guarded result if user is authorized', () => {
+test('keep allowed result if user is authorized', () => {
   const hit = h();
-  const jwt: Jwt = {iss: 1, guarded: []};
+  const jwt: Jwt = {iss: 1, allowed: []};
 
-  expect(guarded(hit, jwt)).toBeFalsy();
+  expect(allowed(hit, jwt)).toBeTruthy();
 });
 
-test('keep guarded result if user is not authorized to different forum', () => {
+test('remove guarded result if user is authorized to different forum', () => {
   const hit = h();
-  const jwt: Jwt = {iss: 1, guarded: [2]};
+  const jwt: Jwt = {iss: 1, allowed: [2]};
 
-  expect(guarded(hit, jwt)).toBeFalsy();
+  expect(allowed(hit, jwt)).toBeFalsy();
 });
 
 test('remove guarded result when user is undefined', () => {
   const hit = h();
 
-  expect(guarded(hit)).toBeTruthy();
+  expect(allowed(hit)).toBeFalsy();
 });

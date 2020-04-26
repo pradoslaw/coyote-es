@@ -32,11 +32,11 @@ test('keep allowed result', () => {
   expect(allowed(hit, jwt)).toBeTruthy();
 });
 
-test('keep allowed result if user is authorized', () => {
+test('remove result if user is not authorized', () => {
   const hit = h();
   const jwt: Jwt = {iss: 1, allowed: []};
 
-  expect(allowed(hit, jwt)).toBeTruthy();
+  expect(allowed(hit, jwt)).toBeFalsy();
 });
 
 test('remove guarded result if user is authorized to different forum', () => {
@@ -50,4 +50,13 @@ test('remove guarded result when user is undefined', () => {
   const hit = h();
 
   expect(allowed(hit)).toBeFalsy();
+});
+
+test('remove hidden category', () => {
+  const hit = h();
+
+  hit.forum = {id: 1, name: '', slug: '', url: '', is_prohibited: false}
+  const jwt: Jwt = {iss: 1, allowed: [2, 3, 4]};
+
+  expect(allowed(hit, jwt)).toBeFalsy();
 });

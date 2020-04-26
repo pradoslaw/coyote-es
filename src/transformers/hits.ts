@@ -18,5 +18,7 @@ export default (result: elasticsearch.ElasticsearchResult, user: Jwt) => {
 
       return resultHit;
     })
-    .filter(hit => allowed(hit, user));
+    .filter(hit => {
+      return allowed(hit, user);
+    });
 }

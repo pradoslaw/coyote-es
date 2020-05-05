@@ -42,7 +42,7 @@ export class SuggestionsBuilder {
     return {
       index: process.env.INDEX,
       body: {
-        _source: ['id', 'model', 'subject', 'title', 'name', 'url', 'forum', 'subscribers', 'participants', 'user_id'],
+        _source: ['id', 'model', 'subject', 'title', 'name', 'url', 'forum', 'subscribers', 'participants', 'user_id', 'photo'],
         suggest: suggest.toJSON()
       }
     }

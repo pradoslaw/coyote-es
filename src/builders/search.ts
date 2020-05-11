@@ -50,7 +50,7 @@ export default class SearchBuilder {
       bool.should(this.buildNestedQuery());
     }
 
-    return esb.requestBodySearch()
+    const request = esb.requestBodySearch()
       .query(
         new esb.FunctionScoreQuery()
           .query(bool)
@@ -58,6 +58,11 @@ export default class SearchBuilder {
       )
       .highlight(new esb.Highlight(['title', 'subject']))
       .source(SOURCE)
+
+    return {
+      index: process.env.INDEX,
+      body: request.toJSON()
+    }
   }
 
   private buildModels() {
@@ -67,7 +72,7 @@ export default class SearchBuilder {
   private buildAllowedForums() {
     return new esb.BoolQuery()
       .should([
-        new esb.TermsQuery('forums.id', this.jwt.allowed as unknown as string[]),
+        new esb.TermsQuery('forum.id', this.jwt.allowed as unknown as string[]),
         new esb.BoolQuery().mustNot(new esb.ExistsQuery('forum.id'))
       ])
   }

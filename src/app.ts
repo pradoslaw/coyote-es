@@ -21,9 +21,11 @@ app.use(express.urlencoded({ extended: false }));
 import SuggestionController from './routes/suggestions';
 import HubController from './routes/hub';
 import HealtcheckController from './routes/healtcheck';
+import SearchController from './routes/search';
 
 app.use('/', new SuggestionController().router);
 app.use('/hub', new HubController().router);
+app.use('/search', new SearchController().router);
 app.use('/healtcheck', new HealtcheckController().router);
 
 const server = app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`));

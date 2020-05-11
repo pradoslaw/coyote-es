@@ -5,7 +5,7 @@ import HubBuilder from "../builders/hub";
 import { ElasticsearchResult } from "../types/elasticsearch";
 import jwt from "express-jwt";
 import client from '../elasticsearch';
-import transform from '../transformers/hits';
+import transform from '../transformers/hub';
 
 export default class HubController {
   public router = express.Router();
@@ -15,10 +15,7 @@ export default class HubController {
   }
 
   getSuggestions = asyncHandler(async (req: express.Request, res: express.Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
+    validationResult(req).throw();
 
     // make sure user id is really int
     // @todo code duplicated along routes

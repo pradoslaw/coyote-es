@@ -4,11 +4,8 @@ import esb from 'elastic-builder';
 
 test('build simple query with one model', () => {
   const builder = new SearchBuilder({models: [Model.Topic]}, {allowed: [1]});
-  const result = builder.build();
+  const json = builder.build().body;
 
-  expect(result).toBeInstanceOf(esb.RequestBodySearch);
-
-  const json = result.toJSON();
   // @ts-ignore
   const must = json['query']['function_score']['query']['bool']['must'];
 
@@ -19,9 +16,7 @@ test('build simple query with one model', () => {
 
 test('build with query', () => {
   const builder = new SearchBuilder({query: 'test'}, {allowed: [1]});
-  const result = builder.build();
-
-  const json = result.toJSON();
+  const json = builder.build().body;
 
   // @ts-ignore
   const should = json['query']['function_score']['query']['bool']['should'];
@@ -32,9 +27,7 @@ test('build with query', () => {
 
 test('build with query and user', () => {
   const builder = new SearchBuilder({query: 'test', userId: 1}, {iss: 1, allowed: [1]});
-  const result = builder.build();
-
-  const json = result.toJSON();
+  const json = builder.build().body;
 
   // @ts-ignore
   const should = json['query']['function_score']['query']['bool']['should'];

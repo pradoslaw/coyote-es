@@ -20,13 +20,11 @@ export default class HubController {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    if (req.user) {
-      // make sure user id is really int
-      // @todo code duplicated along routes
-      req.user.iss = parseInt(String(req.user.iss));
-    }
+    // make sure user id is really int
+    // @todo code duplicated along routes
+    const userId = parseInt(String(req.user!.iss));
 
-    const params = new HubBuilder(req.user!.iss).build();
+    const params = new HubBuilder(userId).build();
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;

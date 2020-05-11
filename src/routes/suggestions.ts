@@ -21,13 +21,13 @@ export default class SuggestionController {
       return res.status(422).json({errors: errors.array()});
     }
 
+    let userId = null;
+
     if (req.user) {
       // make sure user id is really int
       // @todo code duplicated along routes
       req.user.iss = parseInt(String(req.user.iss));
     }
-
-    const userId = req.user ? req.user.iss : null;
 
     const params = new SuggestionsBuilder({prefix: req.query.q, userId, models: req.query?.model}).build();
     const result = await client.search(params);

@@ -18,7 +18,7 @@ export default class SearchController {
   getResults = asyncHandler(async (req: express.Request, res: express.Response) => {
     validationResult(req).throw();
 
-    const params = new SearchBuilder({query: req.query.q, userId: req.query.user_id, models: req.query?.models}, req.user!).build();
+    const params = new SearchBuilder({query: req.query.q, userId: req.query.user_id, models: req.query?.models}, req.user).build();
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;
@@ -33,7 +33,7 @@ export default class SearchController {
       query('q').optional(),
       query('user_id').optional().isNumeric(),
       query('model').optional().isIn([Model.Topic, Model.Job, Model.Wiki, Model.User]),
-      jwt({secret: process.env.APP_KEY!, credentialsRequired: true})
+      jwt({secret: process.env.APP_KEY!, credentialsRequired: false})
     ];
   }
 };

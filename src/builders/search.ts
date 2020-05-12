@@ -31,9 +31,9 @@ const FIELDS = [
 
 export default class SearchBuilder {
   private options: SearchOptions;
-  private jwt: Jwt;
+  private readonly jwt?: Jwt;
 
-  constructor(options: SearchOptions, jwt: Jwt) {
+  constructor(options: SearchOptions, jwt: Jwt | undefined) {
     this.options = options;
     this.jwt = jwt;
 
@@ -41,6 +41,13 @@ export default class SearchBuilder {
   }
 
   build() {
+    return {
+      index: process.env.INDEX,
+      body: this.body().toJSON()
+    }
+  }
+
+  private body() {
     const bool = new esb.BoolQuery().must(this.buildAllowedForums());
 
     if (this.options.models) {
@@ -52,19 +59,14 @@ export default class SearchBuilder {
       bool.should(this.buildNestedQuery());
     }
 
-    const request = esb.requestBodySearch()
+    return esb.requestBodySearch()
       .query(
         new esb.FunctionScoreQuery()
           .query(bool)
           .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('180d').offset('1d').decay(0.1))
       )
       .highlight(new esb.Highlight(['title', 'subject']))
-      .source(SOURCE)
-
-    return {
-      index: process.env.INDEX,
-      body: request.toJSON()
-    }
+      .source(SOURCE);
   }
 
   private buildModels() {
@@ -72,42 +74,49 @@ export default class SearchBuilder {
   }
 
   private buildAllowedForums() {
-    return new esb.BoolQuery()
-      .should([
-        new esb.TermsQuery('forum.id', this.jwt.allowed as unknown as string[]),
-        new esb.BoolQuery().mustNot(new esb.ExistsQuery('forum.id'))
-      ])
+    const bool = new esb.BoolQuery().should(new esb.BoolQuery().mustNot(new esb.ExistsQuery('forum.id')));
+
+    if (this.jwt) {
+      bool.should(new esb.TermsQuery('forum.id', this.jwt.allowed as unknown as string[]))
+    }
+    else {
+      bool.should(new esb.MatchQuery('forum.is_prohibited', 'false'));
+    }
+
+    return bool;
   }
 
   private buildMatchQuery() {
-    let bool = [];
+    const bool = new esb.BoolQuery();
 
     if (this.options.userId) {
-      bool.push(new esb.MatchQuery('user_id', this.options.userId as unknown as string));
+      bool.must(new esb.MatchQuery('user_id', this.options.userId as unknown as string));
     }
 
     if (this.options.query) {
-      bool.push(new esb.SimpleQueryStringQuery(this.options.query).fields(FIELDS))
+      bool.must(new esb.SimpleQueryStringQuery(this.options.query).fields(FIELDS))
     }
 
-    return new esb.BoolQuery().must(bool);
+    return bool;
   }
 
   private buildNestedQuery() {
-    let bool = [];
+    const bool = new esb.BoolQuery();
 
     if (this.options.userId) {
-      bool.push(new esb.MatchQuery('user_id', this.options.userId as unknown as string));
+      bool.must(new esb.MatchQuery('user_id', this.options.userId as unknown as string));
     }
 
     if (this.options.query) {
-      bool.push(new esb.SimpleQueryStringQuery(this.options.query).fields(['posts.text']))
+      bool.must(new esb.SimpleQueryStringQuery(this.options.query).fields(['posts.text']))
     }
 
-    return new esb.NestedQuery(new esb.BoolQuery().must(bool), 'posts').innerHits(new esb.InnerHits().size(1))
+    return new esb.NestedQuery(bool, 'posts').innerHits(
+      new esb.InnerHits().size(1).highlight(new esb.Highlight('posts.text'))
+    )
   }
 
   private setDefaults() {
-    this.options.models = this.options.models || [Model.Topic, Model.Job, Model.Wiki, Model.User];
+    this.options.models = this.options.models || [Model.Topic, Model.Job, Model.Microblog, Model.Wiki];
   }
 }

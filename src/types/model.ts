@@ -1,7 +1,7 @@
 export enum Model {
   Topic = 'Topic',
   User = 'User',
-  // Microblog = 'Microblog',
+  Microblog = 'Microblog',
   Job = 'Job',
   Wiki = 'Wiki'
 }

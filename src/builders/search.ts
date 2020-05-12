@@ -57,6 +57,7 @@ export default class SearchBuilder {
     if (this.options.query || this.options.userId) {
       bool.should(this.buildMatchQuery());
       bool.should(this.buildNestedQuery());
+      bool.minimumShouldMatch('50%');
     }
 
     return esb.requestBodySearch()
@@ -104,7 +105,7 @@ export default class SearchBuilder {
     const bool = new esb.BoolQuery();
 
     if (this.options.userId) {
-      bool.must(new esb.MatchQuery('user_id', this.options.userId as unknown as string));
+      bool.must(new esb.MatchQuery('posts.user_id', this.options.userId as unknown as string));
     }
 
     if (this.options.query) {

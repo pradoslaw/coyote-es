@@ -36,6 +36,8 @@ export default class SearchBuilder {
   constructor(options: SearchOptions, jwt: Jwt) {
     this.options = options;
     this.jwt = jwt;
+
+    this.setDefaults();
   }
 
   build() {
@@ -103,5 +105,9 @@ export default class SearchBuilder {
     }
 
     return new esb.NestedQuery(new esb.BoolQuery().must(bool), 'posts').innerHits(new esb.InnerHits().size(1))
+  }
+
+  private setDefaults() {
+    this.options.models = this.options.models || [Model.Topic, Model.Job, Model.Wiki, Model.User];
   }
 }

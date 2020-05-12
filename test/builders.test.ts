@@ -10,7 +10,7 @@ test('build simple query with one model', () => {
   const must = json['query']['function_score']['query']['bool']['must'];
 
   expect(must[1]['terms']['model']).toEqual(['Topic']);
-  expect(must[0]['bool']['should'][0]['terms']['forums.id']).toEqual([1]);
+  expect(must[0]['bool']['should'][0]['terms']['forum.id']).toEqual([1]);
   expect(must[0]['bool']['should'][1]['bool']['must_not']['exists']['field']).toEqual('forum.id');
 });
 

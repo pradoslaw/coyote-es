@@ -3,10 +3,14 @@ import asyncHandler from 'express-async-handler';
 import jwt from 'express-jwt';
 import client from '../elasticsearch';
 import { query, validationResult } from 'express-validator';
-import SearchBuilder from '../builders/search';
+import { default as SearchBuilder, SearchOptions } from '../builders/search';
+import { SuggestionsBuilder } from '../builders/suggestions';
 import { ElasticsearchResult } from '../types/elasticsearch';
 import { Model } from"../types/model";
+import { default as Parser, InputOptions } from '../parser';
 import transform from '../transformers/hits';
+import suggestionsTransformer from '../transformers/suggestions';
+
 
 export default class SearchController {
   public router = express.Router();
@@ -18,7 +22,7 @@ export default class SearchController {
   getResults = asyncHandler(async (req: express.Request, res: express.Response) => {
     validationResult(req).throw();
 
-    const params = new SearchBuilder({query: req.query.q, userId: req.query.user_id, models: req.query?.models}, req.user).build();
+    const params = new SearchBuilder(await this.getOptions(req.query), req.user).build();
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;
@@ -27,6 +31,28 @@ export default class SearchController {
 
     res.send(transform(body));
   });
+
+  private async getOptions(query: any): Promise<SearchOptions> {
+    let defaults: SearchOptions = {query: query.q, userId: query.user_id, model: query?.models};
+
+    if (query.q) {
+      const options = new Parser(query.q).parse();
+
+      if (options.user) {
+        const params = new SuggestionsBuilder({prefix: options.user, models: [Model.User], limit: 1, userId: null}).build()
+        const result = await client.search(params);
+
+        const suggestions = suggestionsTransformer(result.body, undefined);
+
+        defaults.userId = suggestions[0].id;
+      }
+
+      defaults.query = options.query;
+      defaults.model = options.model;
+    }
+
+    return defaults;
+  }
 
   get handlers() {
     return [

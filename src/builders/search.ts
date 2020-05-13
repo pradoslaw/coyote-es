@@ -1,10 +1,10 @@
 import esb from 'elastic-builder';
 import { Model } from '../types/model';
 
-interface SearchOptions {
+export interface SearchOptions {
   query?: string;
   userId?: number | null;
-  models?: Model[];
+  model?: Model | Model[];
 }
 
 const SOURCE = [
@@ -33,7 +33,7 @@ export default class SearchBuilder {
   private options: SearchOptions;
   private readonly jwt?: Jwt;
 
-  constructor(options: SearchOptions, jwt: Jwt | undefined) {
+  constructor(options: SearchOptions, jwt?: Jwt) {
     this.options = options;
     this.jwt = jwt;
 
@@ -50,7 +50,7 @@ export default class SearchBuilder {
   private body() {
     const bool = new esb.BoolQuery().must(this.buildAllowedForums());
 
-    if (this.options.models) {
+    if (this.options.model) {
       bool.must(this.buildModels());
     }
 
@@ -71,7 +71,7 @@ export default class SearchBuilder {
   }
 
   private buildModels() {
-    return new esb.TermsQuery('model', this.options.models);
+    return new esb.TermsQuery('model', this.options.model);
   }
 
   private buildAllowedForums() {
@@ -118,6 +118,6 @@ export default class SearchBuilder {
   }
 
   private setDefaults() {
-    this.options.models = this.options.models || [Model.Topic, Model.Job, Model.Microblog, Model.Wiki];
+    this.options.model = this.options.model || [Model.Topic, Model.Job, Model.Microblog, Model.Wiki];
   }
 }

@@ -1,6 +1,8 @@
 import esb from 'elastic-builder';
 import { Model } from '../types/model';
 
+const SOURCE = ['id', 'model', 'subject', 'url', 'forum', 'title', 'salary', 'subscribers', 'participants', 'user_id'];
+
 export default class HubBuilder {
   private readonly userId: number;
 
@@ -11,10 +13,7 @@ export default class HubBuilder {
   build() {
     return {
       index: process.env.INDEX,
-      body: Object.assign(
-        {_source: ['id', 'model', 'subject', 'url', 'forum', 'title', 'salary', 'subscribers', 'participants', 'user_id']},
-        this.body().toJSON()
-      )
+      body: this.body().toJSON()
     }
   }
 
@@ -32,8 +31,10 @@ export default class HubBuilder {
               ])
               .minimumShouldMatch('50%')
           )
+
           .function(esb.weightScoreFunction(1.2).filter(new esb.TermQuery('user_id', this.userId)))
           .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('10d').offset('1h').decay(0.01))
       )
+      .source(SOURCE)
   }
 }

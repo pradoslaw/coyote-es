@@ -15,7 +15,7 @@ test('build simple query with no model and no jwt', () => {
 });
 
 test('build simple query with one model and jwt', () => {
-  const builder = new SearchBuilder({models: [Model.Topic]}, {allowed: [1]});
+  const builder = new SearchBuilder({model: [Model.Topic]}, {allowed: [1]});
   const json = builder.build().body;
 
   // @ts-ignore

@@ -1,6 +1,6 @@
 import { Model } from "../types/model";
 
-interface InputQuery {
+export interface InputOptions {
   query?: string;
   user?: string;
   model?: Model;
@@ -13,7 +13,7 @@ export default class Parser {
     this.input = input;
   }
 
-  parse(): InputQuery {
+  parse(): InputOptions {
     if (!this.input) {
       return {};
     }

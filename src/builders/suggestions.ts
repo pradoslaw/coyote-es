@@ -4,8 +4,11 @@ import { Model } from '../types/model';
 interface SuggestionOptions {
   prefix: string;
   userId: number | null;
-  models: Model[]
+  models: Model[],
+  limit?: number;
 }
+
+const SOURCE = ['id', 'model', 'subject', 'title', 'name', 'url', 'forum', 'subscribers', 'participants', 'user_id', 'photo'];
 
 class CompletionSuggester extends esb.CompletionSuggester {
   [_body: string]: any;
@@ -42,7 +45,7 @@ export class SuggestionsBuilder {
     return {
       index: process.env.INDEX,
       body: {
-        _source: ['id', 'model', 'subject', 'title', 'name', 'url', 'forum', 'subscribers', 'participants', 'user_id', 'photo'],
+        _source: SOURCE,
         suggest: suggest.toJSON()
       }
     }
@@ -50,12 +53,13 @@ export class SuggestionsBuilder {
 
   private setDefaults() {
     this.options.models = this.options.models || [Model.Topic, Model.Job, Model.Wiki, Model.User];
+    this.options.limit = this.options.limit || 5;
   }
 
   private allSuggestions() {
     return new CompletionSuggester('all_suggestions', 'suggest')
       .prefix(this.options.prefix)
-      .size(5)
+      .size(this.options.limit!)
       .contexts('model', this.options.models)
       .skipDuplicates();
   };
@@ -63,7 +67,7 @@ export class SuggestionsBuilder {
   private userSuggestions() {
     return new CompletionSuggester('user_suggestions', 'suggest')
       .prefix(this.options.prefix)
-      .size(5)
+      .size(this.options.limit!)
       .contexts('category', [
         { context: `user:${this.options.userId}`, boost: 3 },
         { context: `participant:${this.options.userId}`, boost: 2 },

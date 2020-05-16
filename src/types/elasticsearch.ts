@@ -32,11 +32,29 @@ export interface Suggestion {
 }
 
 export interface Hit {
-  _index:   string;
-  _type:    string;
-  _id:      string;
-  _score:   number;
-  _source:  Source;
+  _index:       string;
+  _type:        string;
+  _id:          string;
+  _score:       number;
+  _source:      Source;
+  highlight?:   Highlight;
+  inner_hits?:  InnerHits;
+}
+
+export interface Posts {
+  hits:         Hits;
+}
+
+export interface InnerHits {
+  posts?:       Posts;
+}
+
+export interface Highlight {
+  subject?:         string[];
+  title?:           string[];
+  text?:            string[];
+  "posts.text"?:    string[];
+  "comments.text"?: string[];
 }
 
 export interface Option {
@@ -56,6 +74,7 @@ export interface Source {
   replies:              number | null;
   subject:              string | null;
   title:                string | null;
+  text?:                 string;
   salary:               number | null;
   last_post_created_at: Date | null;
   url:                  string;

@@ -7,10 +7,9 @@ import { default as SearchBuilder, SearchOptions } from '../builders/search';
 import { SuggestionsBuilder } from '../builders/suggestions';
 import { ElasticsearchResult } from '../types/elasticsearch';
 import { Model } from"../types/model";
-import { default as Parser, InputOptions } from '../parser';
+import { default as Parser } from '../parser';
 import transform from '../transformers/hits';
 import suggestionsTransformer from '../transformers/suggestions';
-
 
 export default class SearchController {
   public router = express.Router();
@@ -35,21 +34,25 @@ export default class SearchController {
   private async getOptions(query: any): Promise<SearchOptions> {
     let defaults: SearchOptions = {query: query.q, userId: query.user_id, model: query?.models};
 
-    if (query.q) {
-      const options = new Parser(query.q).parse();
+    if (!query.q) {
+      return defaults;
+    }
 
-      if (options.user) {
-        const params = new SuggestionsBuilder({prefix: options.user, models: [Model.User], limit: 1, userId: null}).build()
-        const result = await client.search(params);
+    const options = new Parser(query.q).parse();
 
-        const suggestions = suggestionsTransformer(result.body, undefined);
+    if (options.user) {
+      const params = new SuggestionsBuilder({prefix: options.user, models: [Model.User], limit: 1, userId: null}).build()
+      const result = await client.search(params);
 
+      const suggestions = suggestionsTransformer(result.body, undefined);
+
+      if (suggestions.length) {
         defaults.userId = suggestions[0].id;
       }
-
-      defaults.query = options.query;
-      defaults.model = options.model;
     }
+
+    defaults.query = options.query;
+    defaults.model = options.model;
 
     return defaults;
   }

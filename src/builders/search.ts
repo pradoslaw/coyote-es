@@ -113,7 +113,7 @@ export default class SearchBuilder {
     }
 
     return new esb.NestedQuery(bool, 'posts').innerHits(
-      new esb.InnerHits().size(1).highlight(new esb.Highlight('posts.text'))
+      new esb.InnerHits().size(1).highlight(new esb.Highlight('posts.text')).source(["posts.id", "posts.user_id", "posts.created_at"])
     )
   }
 

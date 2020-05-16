@@ -66,7 +66,7 @@ export default class SearchBuilder {
           .query(bool)
           .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('180d').offset('1d').decay(0.1))
       )
-      .highlight(new esb.Highlight(['title', 'subject']))
+      .highlight(new esb.Highlight(['title', 'subject', 'text']))
       .source(SOURCE);
   }
 

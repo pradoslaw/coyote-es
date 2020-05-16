@@ -51,10 +51,14 @@ export default class Parser {
 
     this.input = (this.input.slice(0, indexOf) + (ending ? this.input.slice(ending + 1) : '')).trim();
 
-    return name.trim();
+    return this.upperCase(name.trim());
   }
 
   private normalizeModel(model: string | undefined) {
     return model === undefined ? undefined : <Model>model;
+  }
+
+  private upperCase(name: string) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
   }
 }

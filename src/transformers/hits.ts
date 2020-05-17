@@ -35,7 +35,10 @@ function map(hit: elasticsearch.Hit) {
   return result;
 }
 
-
 export default (result: elasticsearch.ElasticsearchResult) => {
-  return result.hits.hits.map(hit => map(hit));
+  return {
+    'took': result.took,
+    'total': result.hits.total,
+    'hits': result.hits.hits.map(hit => map(hit))
+  };
 }

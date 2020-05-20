@@ -7,7 +7,7 @@ import { default as SearchBuilder, SearchOptions } from '../builders/search';
 import { SuggestionsBuilder } from '../builders/suggestions';
 import { ElasticsearchResult } from '../types/elasticsearch';
 import { Model } from"../types/model";
-import { default as Parser } from '../parser';
+import InputAnalyzer from '../analyzers';
 import transform from '../transformers/hits';
 import suggestionsTransformer from '../transformers/suggestions';
 
@@ -38,7 +38,7 @@ export default class SearchController {
       return defaults;
     }
 
-    const options = new Parser(query.q).parse();
+    const options = new InputAnalyzer(query.q).analyze();
 
     if (options.user) {
       const params = new SuggestionsBuilder({prefix: options.user, models: [Model.User], limit: 1, userId: null}).build()

@@ -1,23 +1,23 @@
-import Parser from '../src/parser';
+import InputAnalyzer from '../src/analyzers';
 
-describe('user parser', () => {
+describe('user analyzers', () => {
   test('retrieve user from input', () => {
     const input = 'user:admin';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.user).toBe('admin');
   });
 
   test('retrieve user from input with apostrophe', () => {
     const input = 'user:"admin"';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.user).toBe('admin');
   });
 
   test('retrieve user with apostrophe and query at the end', () => {
     const input = 'user:"adam boduch" test';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.user).toBe('adam boduch');
     expect(result.query).toBe('test');
@@ -25,7 +25,7 @@ describe('user parser', () => {
 
   test('retrieve user with apostrophe and query at the beggining', () => {
     const input = 'test user:"adam boduch"';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.user).toBe('adam boduch');
     expect(result.query).toBe('test');
@@ -33,7 +33,7 @@ describe('user parser', () => {
 
   test('retrieve user and query at the end', () => {
     const input = 'user:admin test';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.user).toBe('admin');
     expect(result.query).toBe('test');
@@ -41,24 +41,24 @@ describe('user parser', () => {
 
   test('retrieve user and query at the beginning', () => {
     const input = 'test user:admin';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.user).toBe('admin');
     expect(result.query).toBe('test');
   });
 })
 
-describe('model parser', () => {
+describe('model analyzers', () => {
   test('retrieve model', () => {
     const input = 'is:topic';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.model).toBe('topic');
   });
 
   test('retrieve model and query at the end', () => {
     const input = 'is:topic test';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.model).toBe('topic');
     expect(result.query).toBe('test');
@@ -66,7 +66,7 @@ describe('model parser', () => {
 
   test('retrieve model and query at the beginning', () => {
     const input = 'test is:topic test';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.model).toBe('topic');
     expect(result.query).toBe('test test');
@@ -74,7 +74,7 @@ describe('model parser', () => {
 
   test('retrieve model and user', () => {
     const input = 'is:topic user:admin';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.model).toBe('topic');
     expect(result.user).toBe('admin');
@@ -83,7 +83,7 @@ describe('model parser', () => {
 
   test('retrieve model and user and query', () => {
     const input = 'is:topic user:admin lorem ipsum';
-    const result = new Parser(input).parse();
+    const result = new InputAnalyzer(input).analyze();
 
     expect(result.model).toBe('topic');
     expect(result.user).toBe('admin');

@@ -1,10 +1,16 @@
 import esb from 'elastic-builder';
 import { Model } from '../types/model';
 
+const SCORE = 'score';
+const DATE = 'date';
+
+type Sort = typeof SCORE | typeof DATE;
+
 export interface SearchOptions {
   query?: string;
   userId?: number | null;
   model?: Model | Model[];
+  sort?: Sort;
 }
 
 const SOURCE = [
@@ -13,6 +19,7 @@ const SOURCE = [
   "replies",
   "subject",
   "title",
+  "created_at",
   "last_post_created_at",
   "url",
   "user_id",
@@ -113,11 +120,12 @@ export default class SearchBuilder {
     }
 
     return new esb.NestedQuery(bool, 'posts').innerHits(
-      new esb.InnerHits().size(1).highlight(new esb.Highlight('posts.text')).source(["posts.id", "posts.user_id", "posts.created_at"])
+      new esb.InnerHits().size(1).highlight(new esb.Highlight('posts.text')).source(["posts.id", "posts.user_id", "posts.url", "posts.created_at"])
     )
   }
 
   private setDefaults() {
     this.options.model = this.options.model || [Model.Topic, Model.Job, Model.Microblog, Model.Wiki];
+    this.options.sort = this.options.sort || SCORE;
   }
 }

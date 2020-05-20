@@ -6,14 +6,14 @@ export interface InputOptions {
   model?: Model;
 }
 
-export default class Parser {
+export default class InputAnalyzer {
   private input: string;
 
   constructor(input: string) {
     this.input = input;
   }
 
-  parse(): InputOptions {
+  analyze(): InputOptions {
     if (!this.input) {
       return {};
     }

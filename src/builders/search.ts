@@ -80,8 +80,8 @@ export default class SearchBuilder {
     }
     else {
       request.query(bool)
-        .sort(new esb.Sort('posts.created_at').nested({path: 'posts', filter: new esb.ExistsQuery('posts.created_at')}))
-        .sort(new esb.Sort('created_at'));
+        .sort(new esb.Sort('posts.created_at', 'desc').nested({path: 'posts', filter: new esb.ExistsQuery('posts.created_at')}))
+        .sort(new esb.Sort('created_at', 'desc'));
     }
 
     return request;

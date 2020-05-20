@@ -46,6 +46,16 @@ test('build with query and user and jwt', () => {
 
   expect(should[0]['bool']['must'][1]['simple_query_string']['query']).toMatch('test');
   expect(should[0]['bool']['must'][0]['match']['user_id']).toEqual(1);
-  expect(should[1]['nested']['query']['bool']['must'][0]['match']['user_id']).toEqual(1);
+  expect(should[1]['nested']['query']['bool']['must'][0]['match']['posts.user_id']).toEqual(1);
   expect(should[1]['nested']['query']['bool']['must'][1]['simple_query_string']['query']).toMatch('test');
+});
+
+test('order by date', () => {
+  const builder = new SearchBuilder({sort: "date"});
+  const json = builder.build().body;
+
+  // @ts-ignore
+  expect(Object.keys(json['sort'][0])[0]).toMatch('posts.created_at');
+  // @ts-ignore
+  expect(json['sort'][1]).toMatch('created_at');
 });

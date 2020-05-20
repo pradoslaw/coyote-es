@@ -67,14 +67,24 @@ export default class SearchBuilder {
       bool.minimumShouldMatch('50%');
     }
 
-    return esb.requestBodySearch()
-      .query(
-        new esb.FunctionScoreQuery()
-          .query(bool)
-          .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('180d').offset('1d').decay(0.1))
-      )
+    const request = esb.requestBodySearch()
       .highlight(new esb.Highlight(['title', 'subject', 'text']))
       .source(SOURCE);
+
+    if (this.options.sort === SCORE) {
+      const fn = new esb.FunctionScoreQuery()
+        .query(bool)
+        .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('180d').offset('1d').decay(0.1));
+
+      request.query(fn);
+    }
+    else {
+      request.query(bool)
+        .sort(new esb.Sort('posts.created_at').nested({path: 'posts', filter: new esb.ExistsQuery('posts.created_at')}))
+        .sort(new esb.Sort('created_at'));
+    }
+
+    return request;
   }
 
   private buildModels() {

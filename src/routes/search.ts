@@ -32,7 +32,7 @@ export default class SearchController {
   });
 
   private async getOptions(query: any): Promise<SearchOptions> {
-    let defaults: SearchOptions = {query: query.q, userId: query.user_id, model: query?.models, sort: query?.sort};
+    let defaults: SearchOptions = {query: query.q, userId: query.user_id, model: query?.model, sort: query?.sort};
 
     if (!query.q) {
       return defaults;
@@ -52,7 +52,7 @@ export default class SearchController {
     }
 
     defaults.query = options.query;
-    defaults.model = options.model;
+    defaults.model = options.model ? options.model : defaults.model;
 
     return defaults;
   }
@@ -62,6 +62,7 @@ export default class SearchController {
       query('q').optional(),
       query('user_id').optional().isNumeric(),
       query('model').optional().isIn([Model.Topic, Model.Job, Model.Wiki, Model.User]),
+      query('sort').optional().isIn(['score', 'date']),
       jwt({secret: process.env.APP_KEY!, credentialsRequired: false})
     ];
   }

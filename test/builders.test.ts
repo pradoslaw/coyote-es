@@ -1,6 +1,5 @@
 import SearchBuilder from '../src/builders/search';
 import {Model} from "../src/types/model";
-import esb from 'elastic-builder';
 
 test('build simple query with no model and no jwt', () => {
   const builder = new SearchBuilder({}, undefined);
@@ -46,7 +45,7 @@ test('build with query and user and jwt', () => {
 
   expect(should[0]['bool']['must'][1]['simple_query_string']['query']).toMatch('test');
   expect(should[0]['bool']['must'][0]['match']['user_id']).toEqual(1);
-  expect(should[1]['nested']['query']['bool']['must'][0]['match']['posts.user_id']).toEqual(1);
+  expect(should[1]['nested']['query']['bool']['must'][0]['match']['children.user_id']).toEqual(1);
   expect(should[1]['nested']['query']['bool']['must'][1]['simple_query_string']['query']).toMatch('test');
 });
 
@@ -55,7 +54,7 @@ test('order by date', () => {
   const json = builder.build().body;
 
   // @ts-ignore
-  expect(Object.keys(json['sort'][0])[0]).toMatch('posts.created_at');
+  expect(Object.keys(json['sort'][0])[0]).toMatch('children.created_at');
   // @ts-ignore
-  expect(json['sort'][1]).toMatch('created_at');
+  expect(Object.keys(json['sort'][1])[0]).toMatch('created_at');
 });

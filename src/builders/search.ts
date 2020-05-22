@@ -10,10 +10,11 @@ export interface SearchOptions {
   query?: string;
   userId?: number | null;
   model?: Model | Model[];
+  categories?: number[];
   sort?: Sort;
 }
 
-const SOURCE = [
+const PARENT_SOURCE = [
   "id",
   "slug",
   "replies",
@@ -28,6 +29,8 @@ const SOURCE = [
   "user_id",
   "model"
 ];
+
+const CHILDREN_SOURCE = ["children.id", "children.user_id", "children.url", "children.created_at"];
 
 const FIELDS = [
   "subject^2",
@@ -69,7 +72,7 @@ export default class SearchBuilder {
 
     const request = esb.requestBodySearch()
       .highlight(new esb.Highlight(['title', 'subject', 'text']))
-      .source(SOURCE);
+      .source(PARENT_SOURCE);
 
     if (this.options.sort === SCORE) {
       const fn = new esb.FunctionScoreQuery()
@@ -80,7 +83,7 @@ export default class SearchBuilder {
     }
     else {
       request.query(bool)
-        .sort(new esb.Sort('posts.created_at', 'desc').nested({path: 'posts', filter: new esb.ExistsQuery('posts.created_at')}))
+        .sort(new esb.Sort('children.created_at', 'desc').nested({path: 'children', filter: new esb.ExistsQuery('children.created_at')}))
         .sort(new esb.Sort('created_at', 'desc'));
     }
 
@@ -122,15 +125,15 @@ export default class SearchBuilder {
     const bool = new esb.BoolQuery();
 
     if (this.options.userId) {
-      bool.must(new esb.MatchQuery('posts.user_id', this.options.userId as unknown as string));
+      bool.must(new esb.MatchQuery('children.user_id', this.options.userId as unknown as string));
     }
 
     if (this.options.query) {
-      bool.must(new esb.SimpleQueryStringQuery(this.options.query).fields(['posts.text']))
+      bool.must(new esb.SimpleQueryStringQuery(this.options.query).fields(['children.text']))
     }
 
-    return new esb.NestedQuery(bool, 'posts').innerHits(
-      new esb.InnerHits().size(1).highlight(new esb.Highlight('posts.text')).source(["posts.id", "posts.user_id", "posts.url", "posts.created_at"])
+    return new esb.NestedQuery(bool, 'children').innerHits(
+      new esb.InnerHits().size(1).highlight(new esb.Highlight('children.text')).source(CHILDREN_SOURCE)
     )
   }
 

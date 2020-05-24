@@ -1,7 +1,7 @@
 import esb from 'elastic-builder';
 import { Model } from '../types/model';
 
-const SOURCE = ['id', 'model', 'subject', 'url', 'forum', 'title', 'salary', 'subscribers', 'participants', 'user_id'];
+const SOURCE = ['id', 'model', 'subject', 'url', 'forum', 'title', 'salary', 'subscribers', 'participants', 'user_id', 'text'];
 
 export default class HubBuilder {
   private readonly userId: number;

@@ -16,6 +16,10 @@ export default (result: elasticsearch.ElasticsearchResult, user: Jwt) => {
       delete resultHit.participants;
       delete resultHit.subscribers;
 
+      if (resultHit.text) {
+        resultHit.text = resultHit.text.substr(0, 200);
+      }
+
       return resultHit;
     })
     .filter(hit => {

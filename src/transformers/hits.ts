@@ -1,29 +1,27 @@
 import * as elasticsearch from "../types/elasticsearch";
-import {default as Hit, Post, Comment} from '../types/hit';
-import { InnerHits } from "../types/elasticsearch";
+import {default as Hit, Child} from '../types/hit';
 
 type HighlightType = 'subject' | 'title' | 'text';
-type HighlightNestedType = 'posts.text' | 'comments.text';
-type InnerHitsKeys = keyof InnerHits;
 
 function map(hit: elasticsearch.Hit) {
   let result: Hit = hit._source;
 
-  if (hit.inner_hits) {
-    (Object.keys(hit.inner_hits) as InnerHitsKeys[]).forEach(key => {
-      const innerHit = hit.inner_hits![key]!.hits.hits[0]; // only first hit
+  if (hit.inner_hits?.children) {
+    const innerHits = hit.inner_hits.children.hits.hits; // only first hit
 
-      if (innerHit) {
-        const nested = <Post | Comment>innerHit?._source;
-        const highlight: HighlightNestedType = `${key}.text` as HighlightNestedType;
+    if (innerHits) {
+      result.children = [];
 
-        if ('highlight' in innerHit && highlight in innerHit.highlight!) {
-          nested.text = innerHit.highlight![highlight]!.join(' ')
+      for (const innerHit of innerHits) {
+        const nested = <Child>innerHit?._source;
+
+        if ('highlight' in innerHit && 'children.text' in innerHit.highlight!) {
+          nested.text = innerHit.highlight!['children.text']!.join(' ')
         }
 
-        result[key] = [nested];
+        result.children.push(nested);
       }
-    });
+    }
   }
 
   if (hit.highlight) {

@@ -32,7 +32,7 @@ export default class SearchController {
   });
 
   private async getOptions(query: any): Promise<SearchOptions> {
-    let defaults: SearchOptions = {query: query.q, userId: query.user_id, model: query?.model, sort: query?.sort};
+    let defaults: SearchOptions = {query: query.q, userId: query.user_id, model: query?.model, sort: query?.sort, categories: query?.categories};
 
     if (!query.q) {
       return defaults;

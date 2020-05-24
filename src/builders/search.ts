@@ -64,6 +64,10 @@ export default class SearchBuilder {
       bool.must(this.buildModels());
     }
 
+    if (this.options.categories) {
+      bool.must(this.buildCategories());
+    }
+
     if (this.options.query || this.options.userId) {
       bool.should(this.buildMatchQuery());
       bool.should(this.buildNestedQuery());
@@ -75,11 +79,10 @@ export default class SearchBuilder {
       .source(PARENT_SOURCE);
 
     if (this.options.sort === SCORE) {
-      const fn = new esb.FunctionScoreQuery()
+      request.query(new esb.FunctionScoreQuery()
         .query(bool)
-        .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('180d').offset('1d').decay(0.1));
-
-      request.query(fn);
+        .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('180d').offset('1d').decay(0.1))
+      );
     }
     else {
       request.query(bool)
@@ -94,17 +97,16 @@ export default class SearchBuilder {
     return new esb.TermsQuery('model', this.options.model);
   }
 
+  private buildCategories() {
+    return new esb.TermsQuery('forum.id', this.options.categories as unknown as string[]);
+  }
+
   private buildAllowedForums() {
-    const bool = new esb.BoolQuery().should(new esb.BoolQuery().mustNot(new esb.ExistsQuery('forum.id')));
-
-    if (this.jwt) {
-      bool.should(new esb.TermsQuery('forum.id', this.jwt.allowed as unknown as string[]))
-    }
-    else {
-      bool.should(new esb.MatchQuery('forum.is_prohibited', 'false'));
-    }
-
-    return bool;
+    return new esb.BoolQuery()
+      .should(new esb.BoolQuery().mustNot(new esb.ExistsQuery('forum.id')))
+      .should(this.jwt
+        ? new esb.TermsQuery('forum.id', this.jwt.allowed as unknown as string[])
+          : new esb.MatchQuery('forum.is_prohibited', 'false'))
   }
 
   private buildMatchQuery() {
@@ -133,7 +135,7 @@ export default class SearchBuilder {
     }
 
     return new esb.NestedQuery(bool, 'children').innerHits(
-      new esb.InnerHits().size(1).highlight(new esb.Highlight('children.text')).source(CHILDREN_SOURCE)
+      new esb.InnerHits().size(3).highlight(new esb.Highlight('children.text')).source(CHILDREN_SOURCE)
     )
   }
 

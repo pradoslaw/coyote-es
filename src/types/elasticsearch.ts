@@ -41,20 +41,19 @@ export interface Hit {
   inner_hits?:  InnerHits;
 }
 
-export interface Posts {
+export interface Children {
   hits:         Hits;
 }
 
 export interface InnerHits {
-  posts?:       Posts;
+  children?:       Children;
 }
 
 export interface Highlight {
   subject?:         string[];
   title?:           string[];
   text?:            string[];
-  "posts.text"?:    string[];
-  "comments.text"?: string[];
+  "children.text"?: string[];
 }
 
 export interface Option {

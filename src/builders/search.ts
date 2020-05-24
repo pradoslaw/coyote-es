@@ -1,8 +1,8 @@
 import esb from 'elastic-builder';
 import { Model } from '../types/model';
 
-const SCORE = 'score';
-const DATE = 'date';
+export const SCORE = 'score';
+export const DATE = 'date';
 
 type Sort = typeof SCORE | typeof DATE;
 

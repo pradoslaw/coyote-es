@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import jwt from 'express-jwt';
 import client from '../elasticsearch';
 import { query, validationResult } from 'express-validator';
-import { default as SearchBuilder, SearchOptions } from '../builders/search';
+import { default as SearchBuilder, SearchOptions, SCORE, DATE } from '../builders/search';
 import { SuggestionsBuilder } from '../builders/suggestions';
 import { ElasticsearchResult } from '../types/elasticsearch';
 import { Model } from"../types/model";
@@ -61,8 +61,8 @@ export default class SearchController {
     return [
       query('q').optional(),
       query('user_id').optional().isNumeric(),
-      query('model').optional().isIn([Model.Topic, Model.Job, Model.Wiki, Model.User]),
-      query('sort').optional().isIn(['score', 'date']),
+      query('model').optional().isIn(Object.values(Model)),
+      query('sort').optional().isIn([SCORE, DATE]),
       jwt({secret: process.env.APP_KEY!, credentialsRequired: false})
     ];
   }

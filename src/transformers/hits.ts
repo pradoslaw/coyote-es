@@ -6,12 +6,12 @@ type HighlightType = 'subject' | 'title' | 'text';
 function map(hit: elasticsearch.Hit) {
   let result: Hit = hit._source;
 
+  result.children = [];
+
   if (hit.inner_hits?.children) {
-    const innerHits = hit.inner_hits.children.hits.hits; // only first hit
+    const innerHits = hit.inner_hits.children.hits.hits;
 
     if (innerHits) {
-      result.children = [];
-
       for (const innerHit of innerHits) {
         const nested = <Child>innerHit?._source;
 

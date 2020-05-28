@@ -1,9 +1,8 @@
 import * as express from "express";
 import asyncHandler from "express-async-handler";
-import { validationResult } from "express-validator";
 import HubBuilder from "../builders/hub";
 import { ElasticsearchResult } from "../types/elasticsearch";
-import jwt from "express-jwt";
+import jwtHandler from '../jwt';
 import client from '../elasticsearch';
 import transform from '../transformers/hub';
 
@@ -11,27 +10,15 @@ export default class HubController {
   public router = express.Router();
 
   constructor() {
-    this.router.get('/', this.getHandlers(), this.getSuggestions);
+    this.router.get('/', jwtHandler(true), this.getSuggestions);
   }
 
   getSuggestions = asyncHandler(async (req: express.Request, res: express.Response) => {
-    validationResult(req).throw();
-
-    // make sure user id is really int
-    // @todo code duplicated along routes
-    const userId = parseInt(String(req.user!.iss));
-
-    const params = new HubBuilder(userId).build();
+    const params = new HubBuilder(req.user!.iss!).build();
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;
 
     res.send(transform(body, req.user!));
   });
-
-  private getHandlers() {
-    return [
-      jwt({secret: process.env.APP_KEY!, credentialsRequired: true})
-    ];
-  }
 }

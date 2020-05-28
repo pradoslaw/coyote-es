@@ -3,7 +3,7 @@ import { Model } from '../types/model';
 
 interface SuggestionOptions {
   prefix: string;
-  userId: number | null;
+  userId?: number;
   models: Model[],
   limit?: number;
 }

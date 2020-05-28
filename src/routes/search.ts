@@ -1,6 +1,6 @@
 import * as express from 'express';
 import asyncHandler from 'express-async-handler';
-import jwt from 'express-jwt';
+import jwtHandler from '../jwt';
 import client from '../elasticsearch';
 import { query, validationResult } from 'express-validator';
 import { default as SearchBuilder, SearchOptions, SCORE, DATE } from '../builders/search';
@@ -15,7 +15,7 @@ export default class SearchController {
   public router = express.Router();
 
   constructor() {
-    this.router.get('/', this.handlers, this.getResults);
+    this.router.get('/', jwtHandler(false), this.validationRules, this.getResults);
   }
 
   getResults = asyncHandler(async (req: express.Request, res: express.Response) => {
@@ -41,7 +41,7 @@ export default class SearchController {
     const options = new InputAnalyzer(query.q).analyze();
 
     if (options.user) {
-      const params = new SuggestionsBuilder({prefix: options.user, models: [Model.User], limit: 1, userId: null}).build()
+      const params = new SuggestionsBuilder({prefix: options.user, models: [Model.User], limit: 1}).build()
       const result = await client.search(params);
 
       const suggestions = suggestionsTransformer(result.body, undefined);
@@ -57,13 +57,12 @@ export default class SearchController {
     return defaults;
   }
 
-  get handlers() {
+  get validationRules() {
     return [
       query('q').optional(),
       query('user_id').optional().isNumeric(),
       query('model').optional().isIn(Object.values(Model)),
-      query('sort').optional().isIn([SCORE, DATE]),
-      jwt({secret: process.env.APP_KEY!, credentialsRequired: false})
+      query('sort').optional().isIn([SCORE, DATE])
     ];
   }
 };

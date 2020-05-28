@@ -19,6 +19,7 @@ const PARENT_SOURCE = [
   "slug",
   "replies",
   "subject",
+  "name",
   "title",
   "created_at",
   "last_post_created_at",
@@ -36,8 +37,11 @@ const FIELDS = [
   "subject^2",
   "title^2",
   "text",
-  "firm.name^2"
+  "firm.name^2",
+  "name"
 ];
+
+const FRAGMENT_SIZE = 255;
 
 export default class SearchBuilder {
   private options: SearchOptions;
@@ -75,7 +79,7 @@ export default class SearchBuilder {
     }
 
     const request = esb.requestBodySearch()
-      .highlight(new esb.Highlight(['title', 'subject', 'text']))
+      .highlight(new esb.Highlight(['title', 'subject', 'text']).fragmentSize(FRAGMENT_SIZE).numberOfFragments(3))
       .source(PARENT_SOURCE);
 
     if (this.options.sort === SCORE) {
@@ -134,9 +138,14 @@ export default class SearchBuilder {
       bool.must(new esb.SimpleQueryStringQuery(this.options.query).fields(['children.text']))
     }
 
-    return new esb.NestedQuery(bool, 'children').innerHits(
-      new esb.InnerHits().size(3).highlight(new esb.Highlight('children.text')).source(CHILDREN_SOURCE)
-    )
+    return new esb.NestedQuery(bool, 'children')
+      .innerHits(
+        new esb.InnerHits()
+          .size(3)
+          .highlight(new esb.Highlight('children.text')/*.fragmentSize(FRAGMENT_SIZE).numberOfFragments(3)*/)
+          .source(CHILDREN_SOURCE)
+      )
+      .scoreMode('sum')
   }
 
   private setDefaults() {

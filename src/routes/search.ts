@@ -32,7 +32,11 @@ export default class SearchController {
   });
 
   private async getOptions(query: any): Promise<SearchOptions> {
-    let defaults: SearchOptions = {query: query.q, userId: query.user_id, model: query?.model, sort: query?.sort, categories: query?.categories};
+    let defaults: SearchOptions = {query: query.q, model: query?.model, sort: query?.sort, categories: query?.categories};
+
+    if (query?.user) {
+      defaults.userId = await this.findUserId(query.user);
+    }
 
     if (!query.q) {
       return defaults;
@@ -41,14 +45,7 @@ export default class SearchController {
     const options = new InputAnalyzer(query.q).analyze();
 
     if (options.user) {
-      const params = new SuggestionsBuilder({prefix: options.user, models: [Model.User], limit: 1}).build()
-      const result = await client.search(params);
-
-      const suggestions = suggestionsTransformer(result.body, undefined);
-
-      if (suggestions.length) {
-        defaults.userId = suggestions[0].id;
-      }
+      defaults.userId = await this.findUserId(options.user);
     }
 
     defaults.query = options.query;
@@ -57,10 +54,21 @@ export default class SearchController {
     return defaults;
   }
 
+  private async findUserId(name: string): Promise<number | undefined> {
+    const params = new SuggestionsBuilder({prefix: name, models: [Model.User], limit: 1}).build()
+    const result = await client.search(params);
+
+    const suggestions = suggestionsTransformer(result.body);
+
+    if (suggestions.length) {
+      return suggestions[0].id;
+    }
+  }
+
   get validationRules() {
     return [
       query('q').optional(),
-      query('user_id').optional().isNumeric(),
+      query('user').optional().isString(),
       query('model').optional().isIn(Object.values(Model)),
       query('sort').optional().isIn([SCORE, DATE])
     ];

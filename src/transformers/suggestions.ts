@@ -20,7 +20,7 @@ const getOptions = (suggestions: elasticsearch.Suggestion[] | null): Hit[] => {
   return result;
 };
 
-export default (result: ElasticsearchResult, user: Jwt | undefined): Hit[] => {
+export default (result: ElasticsearchResult, user?: Jwt): Hit[] => {
   const context = ContextFactory.make(user?.iss ?? null);
 
   return [...getOptions(result.suggest?.user_suggestions), ...getOptions(result.suggest.all_suggestions)]

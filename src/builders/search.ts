@@ -151,7 +151,7 @@ export default class SearchBuilder {
   }
 
   private setDefaults() {
-    this.options.model = this.options.model || [Model.Topic, Model.Job, Model.Microblog, Model.Wiki];
+    this.options.model = this.options.model || [Model.Topic, Model.Job, Model.Microblog, Model.Wiki, Model.User];
     this.options.sort = this.options.sort || SCORE;
     this.options.from = this.options.from || 0;
   }

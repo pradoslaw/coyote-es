@@ -32,7 +32,7 @@ export default class SearchController {
   });
 
   private async getOptions(query: any): Promise<SearchOptions> {
-    let defaults: SearchOptions = {query: query.q, model: query?.model, sort: query?.sort, categories: query?.categories};
+    let defaults: SearchOptions = {query: query.q, model: query?.model, sort: query?.sort, from: query?.from, categories: query?.categories};
 
     if (query?.user) {
       defaults.userId = await this.findUserId(query.user);
@@ -68,6 +68,7 @@ export default class SearchController {
   get validationRules() {
     return [
       query('q').optional(),
+      query('from').optional().isInt(),
       query('user').optional().isString(),
       query('model').optional().isIn(Object.values(Model)),
       query('sort').optional().isIn([SCORE, DATE])

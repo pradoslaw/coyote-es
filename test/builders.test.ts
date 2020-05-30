@@ -58,3 +58,11 @@ test('order by date', () => {
   // @ts-ignore
   expect(Object.keys(json['sort'][1])[0]).toMatch('created_at');
 });
+
+test('set from', () => {
+  const builder = new SearchBuilder({from: 10});
+  const json = builder.build().body;
+
+  // @ts-ignore
+  expect(json['from']).toEqual(10);
+});

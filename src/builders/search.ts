@@ -12,6 +12,7 @@ export interface SearchOptions {
   model?: Model | Model[];
   categories?: number[];
   sort?: Sort;
+  from?: number
 }
 
 const PARENT_SOURCE = [
@@ -80,7 +81,8 @@ export default class SearchBuilder {
 
     const request = esb.requestBodySearch()
       .highlight(new esb.Highlight(['title', 'subject', 'text']).fragmentSize(FRAGMENT_SIZE).numberOfFragments(3))
-      .source(PARENT_SOURCE);
+      .source(PARENT_SOURCE)
+      .from(this.options.from!);
 
     if (this.options.sort === SCORE) {
       request.query(new esb.FunctionScoreQuery()
@@ -151,5 +153,6 @@ export default class SearchBuilder {
   private setDefaults() {
     this.options.model = this.options.model || [Model.Topic, Model.Job, Model.Microblog, Model.Wiki];
     this.options.sort = this.options.sort || SCORE;
+    this.options.from = this.options.from || 0;
   }
 }

@@ -20,16 +20,16 @@ export default class InputAnalyzer {
 
     return {
       user: this.captureSegment('user:'),
-      model: this.normalizeModel(this.captureSegment('is:', Object.values(Model).map(item => item.toLowerCase()))),
+      model: this.normalizeModel(this.upperCase(this.captureSegment('is:', Object.values(Model).map(item => item.toLowerCase())))),
       query: this.input
     };
   }
 
-  private captureSegment(segment: string, validate: string[] = []) {
+  private captureSegment(segment: string, validate: string[] = []): string | undefined {
     const indexOf = this.input.indexOf(segment);
 
     if (indexOf < 0) {
-      return undefined;
+      return;
     }
 
     let beginning = indexOf + segment.length;
@@ -46,19 +46,23 @@ export default class InputAnalyzer {
     const name = this.input.substring(beginning, ending);
 
     if (validate.length && !validate.includes(name)) {
-      return undefined;
+      return;
     }
 
     this.input = (this.input.slice(0, indexOf) + (ending ? this.input.slice(ending + 1) : '')).trim();
 
-    return this.upperCase(name.trim());
+    return name.trim();
   }
 
-  private normalizeModel(model: string | undefined) {
-    return model === undefined ? undefined : <Model>model;
+  private normalizeModel(model?: string) {
+    if (model) {
+      return <Model>model;
+    }
   }
 
-  private upperCase(name: string) {
-    return name.charAt(0).toUpperCase() + name.slice(1);
+  private upperCase(name?: string) {
+    if (name) {
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    }
   }
 }

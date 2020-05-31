@@ -53,14 +53,14 @@ describe('model analyzers', () => {
     const input = 'is:topic';
     const result = new InputAnalyzer(input).analyze();
 
-    expect(result.model).toBe('topic');
+    expect(result.model).toBe('Topic');
   });
 
   test('retrieve model and query at the end', () => {
     const input = 'is:topic test';
     const result = new InputAnalyzer(input).analyze();
 
-    expect(result.model).toBe('topic');
+    expect(result.model).toBe('Topic');
     expect(result.query).toBe('test');
   });
 
@@ -68,7 +68,7 @@ describe('model analyzers', () => {
     const input = 'test is:topic test';
     const result = new InputAnalyzer(input).analyze();
 
-    expect(result.model).toBe('topic');
+    expect(result.model).toBe('Topic');
     expect(result.query).toBe('test test');
   });
 
@@ -76,7 +76,7 @@ describe('model analyzers', () => {
     const input = 'is:topic user:admin';
     const result = new InputAnalyzer(input).analyze();
 
-    expect(result.model).toBe('topic');
+    expect(result.model).toBe('Topic');
     expect(result.user).toBe('admin');
     expect(result.query).toBe('');
   });
@@ -85,7 +85,7 @@ describe('model analyzers', () => {
     const input = 'is:topic user:admin lorem ipsum';
     const result = new InputAnalyzer(input).analyze();
 
-    expect(result.model).toBe('topic');
+    expect(result.model).toBe('Topic');
     expect(result.user).toBe('admin');
     expect(result.query).toBe('lorem ipsum');
   });

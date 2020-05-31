@@ -8,7 +8,7 @@ test('build simple query with no model and no jwt', () => {
   // @ts-ignore
   const must = json['query']['function_score']['query']['bool']['must'];
 
-  expect(must[1]['terms']['model']).toEqual(['Topic', 'Job', 'Microblog', 'Wiki']);
+  expect(must[1]['terms']['model']).toEqual(['Topic', 'Job', 'Microblog', 'Wiki', 'User']);
   expect(must[0]['bool']['should'][0]['bool']['must_not']['exists']['field']).toEqual('forum.id');
   expect(must[0]['bool']['should'][1]['match']['forum.is_prohibited']).toEqual('false');
 });

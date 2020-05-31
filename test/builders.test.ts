@@ -54,9 +54,9 @@ test('order by date', () => {
   const json = builder.build().body;
 
   // @ts-ignore
-  expect(Object.keys(json['sort'][0])[0]).toMatch('children.created_at');
+  expect(Object.keys(json['sort'][1])[0]).toMatch('children.created_at');
   // @ts-ignore
-  expect(Object.keys(json['sort'][1])[0]).toMatch('created_at');
+  expect(Object.keys(json['sort'][0])[0]).toMatch('created_at');
 });
 
 test('set from', () => {

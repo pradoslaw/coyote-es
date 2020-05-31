@@ -80,7 +80,7 @@ export default class SearchBuilder {
     }
 
     const request = esb.requestBodySearch()
-      .highlight(new esb.Highlight(['title', 'subject', 'text']).fragmentSize(FRAGMENT_SIZE).numberOfFragments(3))
+      .highlight(new esb.Highlight(['title', 'subject', 'text', 'name']).fragmentSize(FRAGMENT_SIZE).numberOfFragments(3))
       .source(PARENT_SOURCE)
       .from(this.options.from!);
 
@@ -92,8 +92,8 @@ export default class SearchBuilder {
     }
     else {
       request.query(bool)
-        .sort(new esb.Sort('children.created_at', 'desc').nested({path: 'children', filter: new esb.ExistsQuery('children.created_at')}))
-        .sort(new esb.Sort('created_at', 'desc'));
+        .sort(new esb.Sort('created_at', 'desc'))
+        .sort(new esb.Sort('children.created_at', 'desc').nested({path: 'children', filter: new esb.ExistsQuery('children.created_at')}));
     }
 
     return request;

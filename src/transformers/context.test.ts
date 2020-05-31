@@ -1,7 +1,7 @@
-import ContextFactory from "../src/transformers/context";
-import Hit from '../src/types/hit';
-import { Context } from '../src/types/context';
-import {Model} from "../src/types/model";
+import ContextFactory from "./context";
+import Hit from '../types/hit';
+import { Context } from '../types/context';
+import {Model} from "../types/model";
 
 const h = (): Hit => ({
   forum: null,

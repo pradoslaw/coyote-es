@@ -1,5 +1,5 @@
-import SearchBuilder from '../src/builders/search';
-import {Model} from "../src/types/model";
+import SearchBuilder from './search';
+import {Model} from "../types/model";
 
 test('build simple query with no model and no jwt', () => {
   const builder = new SearchBuilder({}, undefined);

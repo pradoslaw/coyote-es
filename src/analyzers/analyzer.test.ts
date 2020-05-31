@@ -1,4 +1,4 @@
-import InputAnalyzer from '../src/analyzers';
+import InputAnalyzer from './';
 
 describe('user analyzers', () => {
   test('retrieve user from input', () => {

@@ -1,6 +1,6 @@
-import allowed from "../src/transformers/allowed";
-import Hit from "../src/types/hit";
-import { Model } from "../src/types/model";
+import allowed from "./allowed";
+import Hit from "../types/hit";
+import { Model } from "../types/model";
 
 const h = (): Hit => ({
   forum: {

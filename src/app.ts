@@ -8,6 +8,7 @@ dotenv.config({path: '.env'});
 
 if (process.env.APP_KEY_FILE) {
   const data = fs.readFileSync(process.env.APP_KEY_FILE);
+
   process.env["APP_KEY"] = data.toString().trim();
 }
 
@@ -22,10 +23,12 @@ import SuggestionController from './routes/suggestions';
 import HubController from './routes/hub';
 import HealtcheckController from './routes/healtcheck';
 import SearchController from './routes/search';
+import PromptController from "./routes/prompt";
 
 app.use('/', new SuggestionController().router);
 app.use('/hub', new HubController().router);
 app.use('/search', new SearchController().router);
+app.use('/prompt', new PromptController().router);
 app.use('/healtcheck', new HealtcheckController().router);
 
 const server = app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`));

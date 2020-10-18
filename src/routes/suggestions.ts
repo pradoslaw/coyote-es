@@ -18,8 +18,6 @@ export default class SuggestionController {
   getSuggestions = asyncHandler(async (req: express.Request, res: express.Response) => {
     validationResult(req).throw();
 
-    let userId = null;
-
     const params = new SuggestionsBuilder({prefix: req.query.q, userId: req.user?.iss, models: req.query?.model}).build();
     const result = await client.search(params);
 

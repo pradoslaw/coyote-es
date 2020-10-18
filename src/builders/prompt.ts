@@ -29,12 +29,13 @@ export class PromptBuilder {
           .query(
             new esb.BoolQuery()
               .must(new esb.TermsQuery('model', Model.User))
-              .must(new esb.PrefixQuery('name', this.options.prefix))
+              .must(new esb.PrefixQuery('name.original', this.options.prefix))
 
           )
           .function(esb.weightScoreFunction(2).filter(new esb.IdsQuery('id', this.options.context)))
           .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('10d').offset('1d').decay(0.01))
       )
+      .size(5)
       .source(SOURCE)
   }
 }

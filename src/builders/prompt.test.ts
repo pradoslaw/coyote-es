@@ -1,5 +1,4 @@
 import { PromptBuilder } from './prompt';
-import {Model} from "../types/model";
 
 test('build query without context id', () => {
   const builder = new PromptBuilder({prefix: 'a'});
@@ -13,12 +12,11 @@ test('build query without context id', () => {
 });
 
 test('build query with context id', () => {
-  const builder = new PromptBuilder({prefix: 'a', context: [1]});
+  const builder = new PromptBuilder({prefix: 'a', context: [1, 1]});
   const json = builder.build().body;
 
   // @ts-ignore
-  const must = json['query']['function_score']['functions'];
+  const functions = json['query']['function_score']['functions'];
 
-  expect(must[0]['filter']['ids']['values']).toEqual([1]);
-
+  expect(functions[0]['filter']['ids']['values']).toEqual(['user_1']);
 });

@@ -10,13 +10,15 @@ export default class PromptController {
   public router = express.Router();
 
   constructor() {
-    this.router.get('/', jwtHandler(false), this.getUsers);
+    this.router.get('/:context?', jwtHandler(false), this.getUsers);
   }
 
   getUsers = asyncHandler(async (req: express.Request, res: express.Response) => {
-    const options = {prefix: req.query['q'], context: await this.getContext(req.query['id'])}
+    const context = await this.getContext(parseInt(req.params['context']));
+    const options = { prefix: req.query['q'], context }
 
-    const params = new PromptBuilder(options).build()
+    const params = new PromptBuilder(options).build();
+
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;
@@ -24,12 +26,12 @@ export default class PromptController {
     res.send(transform(body));
   });
 
-  private async getContext(topicId: number): Promise<number[] | undefined> {
-    if (!topicId) {
+  private async getContext(docId: number): Promise<number[] | undefined> {
+    if (!docId) {
       return;
     }
 
-    const params = new ContextBuilder(topicId).build()
+    const params = new ContextBuilder(docId).build()
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;

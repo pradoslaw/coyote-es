@@ -9,10 +9,10 @@ interface PromptOptions {
 const SOURCE = ['id', 'name', 'photo', 'group'];
 
 export class ContextBuilder {
-  private topicId: number;
+  private docId: number;
 
-  constructor(topicId: number) {
-    this.topicId = topicId;
+  constructor(docId: number) {
+    this.docId = docId;
   }
 
   build() {
@@ -26,7 +26,7 @@ export class ContextBuilder {
     return esb.requestBodySearch()
       .query(
           new esb.BoolQuery()
-            .must(new esb.IdsQuery('_doc', [`topic_${this.topicId}`]))
+            .must(new esb.IdsQuery('_doc', [`topic_${this.docId}`]))
       )
       .source(['user_id', 'children.user_id'])
   }
@@ -36,7 +36,10 @@ export class PromptBuilder {
   private options: PromptOptions;
 
   constructor(options: PromptOptions) {
-    this.options = options;
+    // remove duplicates
+    const context = [...new Set(options.context)];
+
+    this.options = {...options, context };
   }
 
   build() {
@@ -54,10 +57,9 @@ export class PromptBuilder {
             new esb.BoolQuery()
               .must(new esb.TermsQuery('model', Model.User))
               .must(new esb.PrefixQuery('name.original', this.options.prefix))
-
           )
           .scoreMode('sum')
-          .function(esb.weightScoreFunction(2).filter(new esb.IdsQuery('id', this.options.context)))
+          .function(esb.weightScoreFunction(20).filter(new esb.IdsQuery(undefined, this.options.context?.map(id => `user_${id}`))))
           .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('10d').offset('1d').decay(0.01))
       )
       .size(5)

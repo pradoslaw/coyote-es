@@ -1,5 +1,6 @@
 import esb from 'elastic-builder';
 import { Model } from '../types/model';
+import { Builder } from './builder';
 
 export const SCORE = 'score';
 export const DATE = 'date';
@@ -44,25 +45,20 @@ const FIELDS = [
 
 const FRAGMENT_SIZE = 255;
 
-export default class SearchBuilder {
+export default class SearchBuilder extends Builder {
   private options: SearchOptions;
   private readonly jwt?: Jwt;
 
   constructor(options: SearchOptions, jwt?: Jwt) {
+    super()
+
     this.options = options;
     this.jwt = jwt;
 
     this.setDefaults();
   }
 
-  build() {
-    return {
-      index: process.env.INDEX,
-      body: this.body().toJSON()
-    }
-  }
-
-  private body() {
+  protected body() {
     const bool = new esb.BoolQuery().must(this.buildAllowedForums());
 
     if (this.options.model) {

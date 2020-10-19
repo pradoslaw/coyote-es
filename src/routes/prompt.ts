@@ -18,7 +18,6 @@ export default class PromptController {
     const options = { prefix: req.query['q'], context }
 
     const params = new PromptBuilder(options).build();
-
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;

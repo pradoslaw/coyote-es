@@ -1,5 +1,6 @@
 import esb from 'elastic-builder';
 import { Model } from "../types/model";
+import { Builder } from './builder';
 
 interface PromptOptions {
   prefix: string;
@@ -8,21 +9,16 @@ interface PromptOptions {
 
 const SOURCE = ['id', 'name', 'photo', 'group'];
 
-export class ContextBuilder {
+export class ContextBuilder extends Builder {
   private docId: number;
 
   constructor(docId: number) {
+    super();
+
     this.docId = docId;
   }
 
-  build() {
-    return {
-      index: process.env.INDEX,
-      body: this.body().toJSON()
-    }
-  }
-
-  body() {
+  protected body() {
     return esb.requestBodySearch()
       .query(
           new esb.BoolQuery()
@@ -32,24 +28,19 @@ export class ContextBuilder {
   }
 }
 
-export class PromptBuilder {
+export class PromptBuilder extends Builder {
   private options: PromptOptions;
 
   constructor(options: PromptOptions) {
+    super()
+
     // remove duplicates
     const context = [...new Set(options.context)];
 
-    this.options = {...options, context };
+    this.options = { ...options, context };
   }
 
-  build() {
-    return {
-      index: process.env.INDEX,
-      body: this.body().toJSON()
-    }
-  }
-
-  private body() {
+  protected body() {
     return esb.requestBodySearch()
       .query(
         new esb.FunctionScoreQuery()

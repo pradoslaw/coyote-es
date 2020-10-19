@@ -8,6 +8,30 @@ interface PromptOptions {
 
 const SOURCE = ['id', 'name', 'photo', 'group'];
 
+export class ContextBuilder {
+  private topicId: number;
+
+  constructor(topicId: number) {
+    this.topicId = topicId;
+  }
+
+  build() {
+    return {
+      index: process.env.INDEX,
+      body: this.body().toJSON()
+    }
+  }
+
+  body() {
+    return esb.requestBodySearch()
+      .query(
+          new esb.BoolQuery()
+            .must(new esb.IdsQuery('_doc', [`topic_${this.topicId}`]))
+      )
+      .source(['user_id', 'children.user_id'])
+  }
+}
+
 export class PromptBuilder {
   private options: PromptOptions;
 
@@ -32,6 +56,7 @@ export class PromptBuilder {
               .must(new esb.PrefixQuery('name.original', this.options.prefix))
 
           )
+          .scoreMode('sum')
           .function(esb.weightScoreFunction(2).filter(new esb.IdsQuery('id', this.options.context)))
           .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('10d').offset('1d').decay(0.01))
       )

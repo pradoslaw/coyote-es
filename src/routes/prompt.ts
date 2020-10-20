@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler";
 import client from "../elasticsearch";
 import { ElasticsearchResult } from "../types/elasticsearch";
 import { ContextBuilder, PromptBuilder } from "../builders/prompt";
-import { default as transform, pluckUsersIds } from '../transformers/prompt';
+import { default as transform, getUsersIds } from '../transformers/prompt';
 
 export default class PromptController {
   public router = express.Router();
@@ -35,6 +35,6 @@ export default class PromptController {
 
     const body: ElasticsearchResult = result.body;
 
-    return pluckUsersIds(body);
+    return getUsersIds(body);
   }
 }

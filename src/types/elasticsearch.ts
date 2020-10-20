@@ -43,7 +43,6 @@ export interface Hit {
 
 export interface Children {
   hits:         Hits;
-  user_id?:     number;
 }
 
 export interface InnerHits {
@@ -83,7 +82,6 @@ export interface Source {
   suggest:              SuggestElement[] | null;
   participants:         number[];
   subscribers:          number[];
-  children?:            Children[];
 }
 
 export interface Forum {

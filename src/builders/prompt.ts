@@ -47,7 +47,7 @@ export class PromptBuilder extends Builder {
           .query(
             new esb.BoolQuery()
               .must(new esb.TermsQuery('model', Model.User))
-              .must(new esb.PrefixQuery('name.original', this.options.prefix))
+              .must(new esb.PrefixQuery('name.original', this.options.prefix.toLocaleLowerCase()))
           )
           .scoreMode('sum')
           .function(esb.weightScoreFunction(20).filter(new esb.IdsQuery(undefined, this.options.context?.map(id => `user_${id}`))))

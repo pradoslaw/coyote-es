@@ -83,12 +83,12 @@ export default class SearchBuilder extends Builder {
     if (this.options.sort === SCORE) {
       request.query(new esb.FunctionScoreQuery()
         .query(bool)
-        .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('180d').offset('1d').decay(0.1))
+        .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('180d').offset('1m').decay(0.05))
       );
     }
     else {
       request.query(bool)
-        .sort(new esb.Sort('created_at', 'desc'))
+        .sort(new esb.Sort('decay_date', 'desc'))
         .sort(new esb.Sort('children.created_at', 'desc').nested({path: 'children', filter: new esb.ExistsQuery('children.created_at')}));
     }
 

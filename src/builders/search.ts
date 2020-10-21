@@ -36,10 +36,10 @@ const PARENT_SOURCE = [
 const CHILDREN_SOURCE = ["children.id", "children.user_id", "children.url", "children.created_at"];
 
 const FIELDS = [
-  "subject^2",
-  "title^2",
+  "subject^10",
+  "title^10",
   "text",
-  "firm.name^2",
+  "firm.name^10",
   "name"
 ];
 
@@ -83,7 +83,7 @@ export default class SearchBuilder extends Builder {
     if (this.options.sort === SCORE) {
       request.query(new esb.FunctionScoreQuery()
         .query(bool)
-        .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('180d').offset('1m').decay(0.05))
+        .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('1000d').offset('30d').decay(0.5))
       );
     }
     else {
@@ -143,7 +143,7 @@ export default class SearchBuilder extends Builder {
           .highlight(new esb.Highlight('children.text')/*.fragmentSize(FRAGMENT_SIZE).numberOfFragments(3)*/)
           .source(CHILDREN_SOURCE)
       )
-      .scoreMode('sum')
+      // .scoreMode('sum')
   }
 
   private setDefaults() {

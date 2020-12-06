@@ -1,20 +1,15 @@
 import esb from 'elastic-builder';
-import { BuilderInterface } from './builder';
+import { Builder } from './builder';
 
 const SOURCE = ['subject', 'model', 'subject', 'url', 'forum', 'title', 'salary', 'user_id'];
 
-export default class SimilarBuilder implements BuilderInterface {
+export default class SimilarBuilder extends Builder {
   private readonly searchText: string;
 
   constructor(searchText: string) {
-    this.searchText = searchText;
-  }
+    super();
 
-  build() {
-    return {
-      index: process.env.INDEX,
-      body: this.body().toJSON()
-    }
+    this.searchText = searchText;
   }
 
   protected body() {

@@ -5,17 +5,30 @@ import client from "../elasticsearch";
 import { ElasticsearchResult } from "../types/elasticsearch";
 import { ContextBuilder, PromptBuilder } from "../builders/prompt";
 import { default as transform, getUsersIds } from '../transformers/prompt';
+import { Model } from "../types/model";
 
 export default class PromptController {
   public router = express.Router();
 
   constructor() {
-    this.router.get('/:context?', jwtHandler(false), this.getUsers);
+    this.router.get('/users/:context?', jwtHandler(false), this.getUsers);
+    this.router.get('/tags', jwtHandler(false), this.getTags);
   }
 
   getUsers = asyncHandler(async (req: express.Request, res: express.Response) => {
     const context = await this.getContext(parseInt(req.params['context']));
-    const options = { prefix: req.query['q'], context }
+    const options = { prefix: req.query['q'], context, model: Model.User }
+
+    const params = new PromptBuilder(options).build();
+    const result = await client.search(params);
+
+    const body: ElasticsearchResult = result.body;
+
+    res.send(transform(body));
+  });
+
+  getTags = asyncHandler(async (req: express.Request, res: express.Response) => {
+    const options = { prefix: req.query['q'], model: Model.Tag }
 
     const params = new PromptBuilder(options).build();
     const result = await client.search(params);

@@ -1,7 +1,8 @@
 import { PromptBuilder } from './prompt';
+import { Model } from "../types/model";
 
 test('build query without context id', () => {
-  const builder = new PromptBuilder({prefix: 'a'});
+  const builder = new PromptBuilder({prefix: 'a', model: Model.User});
   const json = builder.build().body;
 
   // @ts-ignore
@@ -12,7 +13,7 @@ test('build query without context id', () => {
 });
 
 test('build query with context id', () => {
-  const builder = new PromptBuilder({prefix: 'a', context: [1, 1]});
+  const builder = new PromptBuilder({prefix: 'a', context: [1, 1], model: Model.User});
   const json = builder.build().body;
 
   // @ts-ignore

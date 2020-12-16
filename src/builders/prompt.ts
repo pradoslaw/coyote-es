@@ -5,9 +5,10 @@ import { Builder } from './builder';
 interface PromptOptions {
   prefix: string;
   context?: number[];
+  model: Model;
 }
 
-const SOURCE = ['id', 'name', 'photo', 'group'];
+const SOURCE = ['id', 'name', 'photo', 'group', 'real_name', 'topics', 'microblogs', 'jobs'];
 
 export class ContextBuilder extends Builder {
   private docId: number;
@@ -46,7 +47,7 @@ export class PromptBuilder extends Builder {
         new esb.FunctionScoreQuery()
           .query(
             new esb.BoolQuery()
-              .must(new esb.TermsQuery('model', Model.User))
+              .must(new esb.TermsQuery('model', this.options.model))
               .must(new esb.PrefixQuery('name.original', this.options.prefix.toLocaleLowerCase()))
           )
           .scoreMode('sum')

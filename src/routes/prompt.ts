@@ -3,7 +3,7 @@ import jwtHandler from "../jwt";
 import asyncHandler from "express-async-handler";
 import client from "../elasticsearch";
 import { ElasticsearchResult } from "../types/elasticsearch";
-import { ContextBuilder, PromptBuilder } from "../builders/prompt";
+import { ContextBuilder, PromptBuilder, PromptOptions } from "../builders/prompt";
 import { default as transform, getUsersIds } from '../transformers/prompt';
 import { Model } from "../types/model";
 
@@ -28,7 +28,7 @@ export default class PromptController {
   });
 
   getTags = asyncHandler(async (req: express.Request, res: express.Response) => {
-    const options = { prefix: req.query['q'], model: Model.Tag }
+    const options: PromptOptions = { prefix: req.query['q'], sort: "topics", model: Model.Tag, limit: 50 }
 
     const params = new PromptBuilder(options).build();
     const result = await client.search(params);

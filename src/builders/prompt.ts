@@ -2,10 +2,18 @@ import esb from 'elastic-builder';
 import { Model } from "../types/model";
 import { Builder } from './builder';
 
-interface PromptOptions {
+const SCORE = '_score';
+const TOPICS = 'topics';
+const JOBS = 'jobs';
+
+type Sort = typeof SCORE | typeof TOPICS | typeof JOBS;
+
+export interface PromptOptions {
   prefix: string;
   context?: number[];
   model: Model;
+  sort?: Sort;
+  limit?: number;
 }
 
 const SOURCE = ['id', 'name', 'photo', 'group', 'real_name', 'topics', 'microblogs', 'jobs'];
@@ -42,6 +50,7 @@ export class PromptBuilder extends Builder {
   }
 
   protected body() {
+    this.options.sort = "topics";
     return esb.requestBodySearch()
       .query(
         new esb.FunctionScoreQuery()
@@ -54,7 +63,8 @@ export class PromptBuilder extends Builder {
           .function(esb.weightScoreFunction(20).filter(new esb.IdsQuery(undefined, this.options.context?.map(id => `user_${id}`))))
           .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('10d').offset('1d').decay(0.01))
       )
-      .size(5)
+      .size(this.options.limit || 25)
+      .sort(new esb.Sort(this.options.sort || SCORE, 'desc'))
       .source(SOURCE)
   }
 }

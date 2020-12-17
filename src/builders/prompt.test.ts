@@ -21,3 +21,11 @@ test('build query with context id', () => {
 
   expect(functions[0]['filter']['ids']['values']).toEqual(['user_1']);
 });
+
+test('build tag query', () => {
+  const builder = new PromptBuilder({prefix: 'a', sort: 'topics', model: Model.Tag});
+  const json = builder.build().body;
+
+  // @ts-ignore
+  expect(json['sort'][0]['topics']).toEqual('desc');
+});

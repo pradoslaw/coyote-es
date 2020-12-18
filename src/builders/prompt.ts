@@ -50,7 +50,6 @@ export class PromptBuilder extends Builder {
   }
 
   protected body() {
-    this.options.sort = "topics";
     return esb.requestBodySearch()
       .query(
         new esb.FunctionScoreQuery()

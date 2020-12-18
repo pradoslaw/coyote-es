@@ -63,7 +63,7 @@ export class PromptBuilder extends Builder {
           .function(esb.weightScoreFunction(20).filter(new esb.IdsQuery(undefined, this.options.context?.map(id => `user_${id}`))))
           .function(new esb.DecayScoreFunction('exp', 'decay_date').scale('10d').offset('1d').decay(0.01))
       )
-      .size(this.options.limit || 25)
+      .size(this.options.limit || 5)
       .sort(new esb.Sort(this.options.sort || SCORE, 'desc'))
       .source(SOURCE)
   }

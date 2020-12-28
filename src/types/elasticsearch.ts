@@ -50,7 +50,6 @@ export interface InnerHits {
 }
 
 export interface Highlight {
-  subject?:         string[];
   title?:           string[];
   text?:            string[];
   "children.text"?: string[];
@@ -71,7 +70,6 @@ export interface Source {
   id:                   number;
   score:                number | null;
   replies:              number | null;
-  subject:              string | null;
   title:                string | null;
   text?:                 string;
   salary:               number | null;

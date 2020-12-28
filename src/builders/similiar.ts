@@ -1,7 +1,7 @@
 import esb from 'elastic-builder';
 import { Builder } from './builder';
 
-const SOURCE = ['subject', 'model', 'subject', 'url', 'forum', 'title', 'salary', 'user_id', 'last_post_created_at'];
+const SOURCE = ['model', 'url', 'forum', 'title', 'salary', 'user_id', 'last_post_created_at'];
 
 export default class SimilarBuilder extends Builder {
   private readonly searchText: string;
@@ -17,7 +17,7 @@ export default class SimilarBuilder extends Builder {
       .query(
         esb.moreLikeThisQuery()
           .like(this.searchText)
-          .fields(['subject'])
+          .fields(['title'])
           .minTermFreq(1)
           .maxQueryTerms(12)
       )

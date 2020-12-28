@@ -1,7 +1,7 @@
 import * as elasticsearch from "../types/elasticsearch";
 import {default as Hit, Child} from '../types/hit';
 
-type HighlightType = 'subject' | 'title' | 'text';
+type HighlightType = 'title' | 'text';
 
 function map(hit: elasticsearch.Hit) {
   let result: Hit = hit._source;

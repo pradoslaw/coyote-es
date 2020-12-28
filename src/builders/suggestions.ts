@@ -8,7 +8,7 @@ interface SuggestionOptions {
   limit?: number;
 }
 
-const SOURCE = ['id', 'model', 'subject', 'title', 'name', 'url', 'forum', 'subscribers', 'participants', 'user_id', 'photo'];
+const SOURCE = ['id', 'model', 'title', 'name', 'url', 'forum', 'subscribers', 'participants', 'user_id', 'photo'];
 
 class CompletionSuggester extends esb.CompletionSuggester {
   [_body: string]: any;

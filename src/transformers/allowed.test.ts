@@ -15,7 +15,7 @@ const h = (): Hit => ({
   model: Model.Topic,
   participants: [1],
   replies: 0,
-  subject: 'test',
+  title: 'test',
   subscribers: [1],
   suggest: null,
   title: null,

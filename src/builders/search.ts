@@ -20,7 +20,6 @@ const PARENT_SOURCE = [
   "id",
   "slug",
   "replies",
-  "subject",
   "name",
   "title",
   "created_at",
@@ -36,7 +35,6 @@ const PARENT_SOURCE = [
 const CHILDREN_SOURCE = ["children.id", "children.user_id", "children.url", "children.created_at"];
 
 const FIELDS = [
-  "subject^10",
   "title^10",
   "text",
   "firm.name^10",
@@ -76,7 +74,7 @@ export default class SearchBuilder extends Builder {
     }
 
     const request = esb.requestBodySearch()
-      .highlight(new esb.Highlight(['title', 'subject', 'text', 'name']).fragmentSize(FRAGMENT_SIZE).numberOfFragments(3))
+      .highlight(new esb.Highlight(['title', 'text', 'name']).fragmentSize(FRAGMENT_SIZE).numberOfFragments(3))
       .source(PARENT_SOURCE)
       .from(this.options.from!);
 

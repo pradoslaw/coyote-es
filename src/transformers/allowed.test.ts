@@ -18,7 +18,6 @@ const h = (): Hit => ({
   title: 'test',
   subscribers: [1],
   suggest: null,
-  title: null,
   url: "",
   user_id: 1,
   score: null,

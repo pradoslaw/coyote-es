@@ -28,7 +28,7 @@ export default class PromptController {
   });
 
   getTags = asyncHandler(async (req: express.Request, res: express.Response) => {
-    const options: PromptOptions = { prefix: req.query['q'], sort: "topics", model: Model.Tag, limit: 50 }
+    const options: PromptOptions = { prefix: req.query['q'] ?? '', sort: "topics", model: Model.Tag, limit: 50 }
 
     const params = new PromptBuilder(options).build();
     const result = await client.search(params);

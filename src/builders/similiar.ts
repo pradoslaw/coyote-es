@@ -21,6 +21,9 @@ export default class SimilarBuilder extends Builder {
           .minTermFreq(1)
           .maxQueryTerms(12)
       )
+      .query(
+        new esb.BoolQuery().must(new esb.TermsQuery('forum.is_prohibited', false))
+      )
       .source(SOURCE)
       .size(50);
   }

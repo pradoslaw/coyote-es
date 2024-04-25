@@ -1,4 +1,4 @@
-import InputAnalyzer from './';
+import InputAnalyzer from './index.js';
 
 describe('user analyzers', () => {
   test('retrieve user from input', () => {
@@ -46,7 +46,7 @@ describe('user analyzers', () => {
     expect(result.user).toBe('admin');
     expect(result.query).toBe('test');
   });
-})
+});
 
 describe('model analyzers', () => {
   test('retrieve model', () => {
@@ -89,4 +89,4 @@ describe('model analyzers', () => {
     expect(result.user).toBe('admin');
     expect(result.query).toBe('lorem ipsum');
   });
-})
+});

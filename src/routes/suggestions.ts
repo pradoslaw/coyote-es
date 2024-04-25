@@ -1,37 +1,30 @@
-import * as express from 'express';
-import asyncHandler from 'express-async-handler';
-import jwtHandler from '../jwt';
-import client from '../elasticsearch';
-import { query, validationResult } from 'express-validator';
-import { SuggestionsBuilder } from '../builders/suggestions';
-import { ElasticsearchResult } from '../types/elasticsearch';
-import transform from "../transformers/suggestions";
-import { Model } from"../types/model";
+import { FastifyPluginAsync } from 'fastify';
+import transform from '../transformers/suggestions.js';
+import { Model } from '../types/model.js';
+import { SuggestionsQuery } from '../queries/suggestions.js';
 
-export default class SuggestionController {
-  public router = express.Router();
-
-  constructor() {
-    this.router.get('/', jwtHandler(false), this.validationRules, this.getSuggestions);
-  }
-
-  getSuggestions = asyncHandler(async (req: express.Request, res: express.Response) => {
-    validationResult(req).throw();
-
-    const params = new SuggestionsBuilder({prefix: req.query.q, userId: req.user?.iss, models: req.query?.model}).build();
-    const result = await client.search(params);
-
-    const body: ElasticsearchResult = result.body;
-
-    console.log(`Response time for "${req.query.q}": ${body.took} ms`);
-
-    res.send(transform(body, req.user));
-  });
-
-  get validationRules() {
-    return [
-      query('q').not().isEmpty().escape(),
-      query('model').optional().isIn([Model.Topic, Model.Job, Model.Wiki, Model.User])
-    ];
-  }
+const preSerialization = (req, response, payload, done) => {
+  done(null, transform(payload.body));
 };
+
+interface QueryString {
+  q: string;
+  model: Model[];
+}
+
+const root: FastifyPluginAsync = async (fastify): Promise<void> => {
+  fastify.get<{ Querystring: QueryString }>(
+    '/suggestions',
+    { preSerialization },
+    async function (request, reply) {
+      return await this.elastic.search(
+        new SuggestionsQuery({
+          prefix: request.query['q'],
+          models: request.query['model'],
+        }).build()
+      );
+    }
+  );
+};
+
+export default root;

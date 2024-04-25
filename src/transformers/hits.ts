@@ -1,5 +1,5 @@
-import * as elasticsearch from "../types/elasticsearch";
-import {default as Hit, Child} from '../types/hit';
+import * as elasticsearch from '../types/elasticsearch.js';
+import { default as Hit, Child } from '../types/hit.js';
 
 type HighlightType = 'title' | 'text';
 
@@ -16,7 +16,7 @@ function map(hit: elasticsearch.Hit) {
         const nested = <Child>innerHit?._source;
 
         if ('highlight' in innerHit && 'children.text' in innerHit.highlight!) {
-          nested.text = innerHit.highlight!['children.text']!.join(' ')
+          nested.text = innerHit.highlight!['children.text']!.join(' ');
         }
 
         result.children.push(nested);
@@ -25,9 +25,9 @@ function map(hit: elasticsearch.Hit) {
   }
 
   if (hit.highlight) {
-    (Object.keys(hit.highlight) as HighlightType[]).forEach(key => {
+    (Object.keys(hit.highlight) as HighlightType[]).forEach((key) => {
       result[key] = hit.highlight![key]!.join(' ');
-    })
+    });
   }
 
   return result;
@@ -35,8 +35,8 @@ function map(hit: elasticsearch.Hit) {
 
 export default (result: elasticsearch.ElasticsearchResult) => {
   return {
-    'took': result.took,
-    'total': result.hits.total,
-    'hits': result.hits.hits.map(hit => map(hit))
+    took: result.took,
+    total: result.hits.total,
+    hits: result.hits.hits.map((hit) => map(hit)),
   };
-}
+};

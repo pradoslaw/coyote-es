@@ -1,5 +1,6 @@
-import Hit from "../types/hit";
-import { Model } from"../types/model";
+import Hit from '../types/hit.js';
+import type { Jwt } from '../types/jwt.js';
+import { Model } from '../types/model.js';
 
 export default (hit: Hit, user?: Jwt): boolean => {
   if (hit.model !== Model.Topic) {
@@ -11,4 +12,4 @@ export default (hit: Hit, user?: Jwt): boolean => {
   }
 
   return user ? user.allowed.includes(hit.forum!.id) : true;
-}
+};

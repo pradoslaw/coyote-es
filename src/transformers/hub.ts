@@ -1,14 +1,15 @@
-import * as elasticsearch from "../types/elasticsearch";
-import ContextFactory from "./context";
-import Hit from '../types/hit';
-import allowed from "./allowed";
+import type { ElasticsearchResult } from '../types/elasticsearch.js';
+import type Hit from '../types/hit.js';
+import type { Jwt } from '../types/jwt.js';
+import ContextFactory from './context.js';
+import allowed from './allowed.js';
 
-export default (result: elasticsearch.ElasticsearchResult, user: Jwt) => {
+export default (result: ElasticsearchResult, user: Jwt) => {
   const context = ContextFactory.make(user.iss!);
 
   return result.hits.hits
-    .map(hit => {
-      let resultHit:Hit = hit._source;
+    .map((hit) => {
+      let resultHit: Hit = hit._source;
 
       context.setContext(resultHit);
 
@@ -17,12 +18,12 @@ export default (result: elasticsearch.ElasticsearchResult, user: Jwt) => {
       delete resultHit.subscribers;
 
       if (resultHit.text) {
-        resultHit.text = resultHit.text.substr(0, 200);
+        resultHit.text = resultHit.text.substring(0, 200);
       }
 
       return resultHit;
     })
-    .filter(hit => {
+    .filter((hit) => {
       return allowed(hit, user);
     });
-}
+};

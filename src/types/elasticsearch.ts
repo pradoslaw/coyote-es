@@ -1,98 +1,98 @@
 export interface ElasticsearchResult {
-  took:      number;
+  took: number;
   timed_out: boolean;
-  _shards:   Shards;
-  hits:      Hits;
-  suggest:   Suggest;
+  _shards: Shards;
+  hits: Hits;
+  suggest: Suggest;
 }
 
 export interface Shards {
-  total:      number;
+  total: number;
   successful: number;
-  skipped:    number;
-  failed:     number;
+  skipped: number;
+  failed: number;
 }
 
 export interface Hits {
-  total:     number;
+  total: number;
   max_score: number;
-  hits:      Hit[];
+  hits: Hit[];
 }
 
 export interface Suggest {
-  all_suggestions:  Suggestion[];
+  all_suggestions: Suggestion[];
   user_suggestions: Suggestion[];
 }
 
 export interface Suggestion {
-  text:    string;
-  offset:  number;
-  length:  number;
+  text: string;
+  offset: number;
+  length: number;
   options: Option[];
 }
 
 export interface Hit {
-  _index:       string;
-  _type:        string;
-  _id:          string;
-  _score:       number;
-  _source:      Source;
-  highlight?:   Highlight;
-  inner_hits?:  InnerHits;
+  _index: string;
+  _type: string;
+  _id: string;
+  _score: number;
+  _source: Source;
+  highlight?: Highlight;
+  inner_hits?: InnerHits;
 }
 
 export interface Children {
-  hits:         Hits;
+  hits: Hits;
 }
 
 export interface InnerHits {
-  children?:       Children;
+  children?: Children;
 }
 
 export interface Highlight {
-  title?:           string[];
-  text?:            string[];
-  "children.text"?: string[];
+  title?: string[];
+  text?: string[];
+  'children.text'?: string[];
 }
 
 export interface Option {
-  text:     string;
-  _index:   string;
-  _type:    string;
-  _id:      string;
-  _score:   number;
-  _source:  Source;
+  text: string;
+  _index: string;
+  _type: string;
+  _id: string;
+  _score: number;
+  _source: Source;
   contexts: OptionContexts;
 }
 
 export interface Source {
-  model:                string;
-  id:                   number;
-  score:                number | null;
-  replies:              number | null;
-  title:                string | null;
-  text?:                 string;
-  salary:               number | null;
+  model: string;
+  id: number;
+  score: number | null;
+  replies: number | null;
+  title: string | null;
+  text?: string;
+  salary: number | null;
   last_post_created_at: Date | null;
-  url:                  string;
-  user_id:              number | null;
-  forum:                Forum | null;
-  suggest:              SuggestElement[] | null;
-  participants:         number[];
-  subscribers:          number[];
+  url: string;
+  user_id: number | null;
+  forum: Forum | null;
+  suggest: SuggestElement[] | null;
+  participants?: number[];
+  subscribers?: number[];
 }
 
 export interface Forum {
-  id:   number;
+  id: number;
   name: string;
   slug: string;
-  url:  string;
+  url: string;
   is_prohibited: boolean;
 }
 
 export interface SuggestElement {
-  input:    string;
-  weight:   number;
+  input: string;
+  weight: number;
   contexts: SuggestContexts;
 }
 

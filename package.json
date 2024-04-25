@@ -1,32 +1,52 @@
 {
-  "name": "coyote-es",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "TS_NODE_FILES=true node -r ts-node/register src/app.ts",
-    "tsc": "tsc",
-    "test": "jest"
+  "type": "module",
+  "name": "fastify",
+  "description": "This project was bootstrapped with Fastify-CLI.",
+  "version": "1.0.0",
+  "main": "app.ts",
+  "directories": {
+    "test": "test"
   },
+  "scripts": {
+    "test": "npm run build:ts && tsc -p test/tsconfig.json && FASTIFY_AUTOLOAD_TYPESCRIPT=1 node --test --experimental-test-coverage --loader ts-node/esm test/**/*.ts",
+    "start": "npm run build:ts && node -l info dist/app.js",
+    "build:ts": "tsc",
+    "watch:ts": "tsc -w",
+    "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
+    "dev:start": "node --watch dist/app.js",
+    "format": "npx prettier . --write"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@elastic/elasticsearch": "6.x",
-    "@types/express": "^4.17.4",
-    "@types/express-jwt": "^0.0.42",
-    "@types/node": "^13.11.1",
-    "debug": "~2.6.9",
-    "dotenv": "^8.2.0",
-    "elastic-builder": "~2.6.0",
-    "express": "~4.16.1",
-    "express-async-handler": "^1.1.4",
-    "express-jwt": "^8.2.0",
-    "express-validator": "^6.4.0",
-    "morgan": "~1.9.1",
-    "ts-jest": "^25.3.1",
-    "tslib": "^1.11.1",
-    "typescript": "^3.8.3"
+    "@elastic/elasticsearch": "^6.8.8",
+    "@fastify/autoload": "^5.0.0",
+    "@fastify/elasticsearch": "^3.1.0",
+    "@fastify/jwt": "^8.0.0",
+    "@fastify/sensible": "^5.0.0",
+    "@types/elasticsearch": "^5.0.43",
+    "@types/fastify-jwt": "^0.8.1",
+    "dotenv": "^16.4.5",
+    "elastic-builder": "^2.28.1",
+    "fastify": "^4.26.1",
+    "fastify-cli": "^6.1.1",
+    "fastify-plugin": "^4.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.1",
-    "jest": "^25.3.0",
-    "ts-node": "^8.8.2"
+    "@types/node": "^20.4.4",
+    "@types/jest": "^29.5.12",
+    "c8": "^9.0.0",
+    "concurrently": "^8.2.2",
+    "fastify-tsconfig": "^2.0.0",
+    "prettier": "3.2.5",
+    "ts-node": "^10.4.0",
+    "typescript": "^5.2.2",
+    "jest": "^29.7.0"
+  },
+  "overrides": {
+    "@fastify/elasticsearch": {
+      "@elastic/elasticsearch": "6.8.8"
+    }
   }
 }

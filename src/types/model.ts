@@ -4,5 +4,5 @@ export enum Model {
   Microblog = 'Microblog',
   Job = 'Job',
   Wiki = 'Wiki',
-  Tag = 'Tag'
+  Tag = 'Tag',
 }

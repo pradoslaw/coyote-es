@@ -1,5 +1,5 @@
-import Hit from "../types/hit";
-import {Context} from '../types/context';
+import Hit from '../types/hit.js';
+import { Context } from '../types/context.js';
 
 interface ContextStrategy {
   readonly context: Context;
@@ -19,7 +19,9 @@ class SubscriberContext implements ContextStrategy {
   readonly context: Context = Context.Subscriber;
 
   establish(hit: Hit, userId: number | null): boolean {
-    return userId && Array.isArray(hit.subscribers) ? hit.subscribers.includes(userId) : false;
+    return userId && Array.isArray(hit.subscribers)
+      ? hit.subscribers.includes(userId)
+      : false;
   }
 }
 
@@ -27,7 +29,9 @@ class ParticipantContext implements ContextStrategy {
   readonly context: Context = Context.Participant;
 
   establish(hit: Hit, userId: number | null): boolean {
-    return userId && Array.isArray(hit.participants) ? hit.participants.includes(userId) : false;
+    return userId && Array.isArray(hit.participants)
+      ? hit.participants.includes(userId)
+      : false;
   }
 }
 

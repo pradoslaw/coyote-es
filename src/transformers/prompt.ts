@@ -1,26 +1,19 @@
-import { ElasticsearchResult } from "../types/elasticsearch";
-import Hit from "../types/hit";
+import type { ElasticsearchResult } from '../types/elasticsearch.js';
+import type Hit from '../types/hit.js';
 
 export default function source(result: ElasticsearchResult) {
-  return result.hits.hits.map(hit => hit._source);
+  return result.hits.hits.map((hit) => hit._source);
 }
 
-export function getUsersIds(result: ElasticsearchResult) {
+export function getUsersIds(result: ElasticsearchResult): (number | null)[] {
   const hit: Hit = result.hits.hits[0]?._source;
 
-  let userIds: number[] = [];
-
-  if (!hit) {
-    return userIds;
+  if (!hit.children) {
+    return [];
   }
 
-  userIds = [ hit.user_id! ];
-
-  for (let child of hit.children!) {
-    if (child.user_id != null) {
-      userIds.push(child.user_id);
-    }
-  }
-
-  return userIds;
+  return hit.children
+    .filter((child) => child.user_id !== null)
+    .map((child) => child.user_id)
+    .concat([hit.user_id]);
 }

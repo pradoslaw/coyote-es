@@ -1,4 +1,4 @@
-import { Model } from "../types/model";
+import { Model } from '../types/model.js';
 
 export interface InputOptions {
   query?: string;
@@ -20,12 +20,22 @@ export default class InputAnalyzer {
 
     return {
       user: this.captureSegment('user:'),
-      model: this.normalizeModel(this.upperCase(this.captureSegment('is:', Object.values(Model).map(item => item.toLowerCase())))),
-      query: this.input
+      model: this.normalizeModel(
+        this.upperCase(
+          this.captureSegment(
+            'is:',
+            Object.values(Model).map((item) => item.toLowerCase())
+          )
+        )
+      ),
+      query: this.input,
     };
   }
 
-  private captureSegment(segment: string, validate: string[] = []): string | undefined {
+  private captureSegment(
+    segment: string,
+    validate: string[] = []
+  ): string | undefined {
     const indexOf = this.input.indexOf(segment);
 
     if (indexOf < 0) {
@@ -34,8 +44,11 @@ export default class InputAnalyzer {
 
     let beginning = indexOf + segment.length;
 
-    const nextChar = this.input.substr(beginning, 1);
-    let ending: number | undefined = this.input.indexOf(nextChar === '"' ? nextChar : ' ', beginning + 1);
+    const nextChar = this.input.substring(beginning, 1);
+    let ending: number | undefined = this.input.indexOf(
+      nextChar === '"' ? nextChar : ' ',
+      beginning + 1
+    );
 
     if (nextChar === '"') {
       beginning += 1;
@@ -49,7 +62,10 @@ export default class InputAnalyzer {
       return;
     }
 
-    this.input = (this.input.slice(0, indexOf) + (ending ? this.input.slice(ending + 1) : '')).trim();
+    this.input = (
+      this.input.slice(0, indexOf) +
+      (ending ? this.input.slice(ending + 1) : '')
+    ).trim();
 
     return name.trim();
   }

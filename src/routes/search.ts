@@ -1,41 +1,51 @@
-import * as express from 'express';
-import asyncHandler from 'express-async-handler';
-import jwtHandler from '../jwt';
-import client from '../elasticsearch';
-import { query, validationResult } from 'express-validator';
-import { default as SearchBuilder, SearchOptions, SCORE, DATE } from '../builders/search';
-import { SuggestionsBuilder } from '../builders/suggestions';
-import { ElasticsearchResult } from '../types/elasticsearch';
-import { Model } from"../types/model";
-import InputAnalyzer from '../analyzers';
-import transform from '../transformers/hits';
-import suggestionsTransformer from '../transformers/suggestions';
+import { FastifyPluginAsync } from 'fastify';
+import { Jwt, Model } from '../types/index.js';
+import SearchQuery, { SearchOptions, Sort } from '../queries/search.js';
+import InputAnalyzer from '../analyzer/index.js';
+import { SuggestionsQuery } from '../queries/suggestions.js';
+import suggestionsTransformer from '../transformers/suggestions.js';
+import transform from '../transformers/hits.js';
 
-export default class SearchController {
-  public router = express.Router();
+const preSerialization = (req, response, payload, done) => {
+  done(null, transform(payload.body));
+};
 
-  constructor() {
-    this.router.get('/', jwtHandler(false), this.validationRules, this.getResults);
-  }
+interface QueryString {
+  q: string;
+  model?: Model;
+  sort?: Sort;
+  from?: number;
+  categories: number[];
+  user: string;
+}
 
-  getResults = asyncHandler(async (req: express.Request, res: express.Response) => {
-    validationResult(req).throw();
+const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  const findUserId = async (name: string): Promise<number | undefined> => {
+    const params = new SuggestionsQuery({
+      prefix: name,
+      models: [Model.User],
+      limit: 1,
+    }).build();
+    const result = await fastify.elastic.search(params);
 
-    const params = new SearchBuilder(await this.getOptions(req.query), req.user).build();
-    const result = await client.search(params);
+    const suggestions = suggestionsTransformer(result.body);
 
-    const body: ElasticsearchResult = result.body;
+    if (suggestions.length) {
+      return suggestions[0].id;
+    }
+  };
 
-    console.log(`Response time for "${req.query.q}": ${body.took} ms`);
-
-    res.send(transform(body));
-  });
-
-  private async getOptions(query: any): Promise<SearchOptions> {
-    let defaults: SearchOptions = {query: query.q, model: query?.model, sort: query?.sort, from: query?.from, categories: query?.categories};
+  const getOptions = async (query: QueryString) => {
+    let defaults: SearchOptions = {
+      query: query.q,
+      model: query.model,
+      sort: query.sort,
+      from: query?.from,
+      categories: query.categories,
+    };
 
     if (query?.user) {
-      defaults.userId = await this.findUserId(query.user);
+      defaults.userId = await findUserId(query.user);
     }
 
     if (!query.q) {
@@ -45,33 +55,27 @@ export default class SearchController {
     const options = new InputAnalyzer(query.q).analyze();
 
     if (options.user) {
-      defaults.userId = await this.findUserId(options.user);
+      defaults.userId = await findUserId(options.user);
     }
 
     defaults.query = options.query;
-    defaults.model = options.model ? options.model : defaults.model;
+    defaults.model = options.model ?? defaults.model;
 
     return defaults;
-  }
+  };
 
-  private async findUserId(name: string): Promise<number | undefined> {
-    const params = new SuggestionsBuilder({prefix: name, models: [Model.User], limit: 1}).build()
-    const result = await client.search(params);
-
-    const suggestions = suggestionsTransformer(result.body);
-
-    if (suggestions.length) {
-      return suggestions[0].id;
+  fastify.get<{ Querystring: QueryString }>(
+    '/search',
+    { preSerialization },
+    async function (request, reply) {
+      return await this.elastic.search(
+        new SearchQuery(
+          await getOptions(request.query),
+          request.user as Jwt
+        ).build()
+      );
     }
-  }
-
-  get validationRules() {
-    return [
-      query('q').optional(),
-      query('from').optional().isInt(),
-      query('user').optional().isString(),
-      query('model').optional().isIn(Object.values(Model)),
-      query('sort').optional().isIn([SCORE, DATE])
-    ];
-  }
+  );
 };
+
+export default root;

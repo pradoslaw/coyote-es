@@ -1,46 +1,46 @@
-import express = require('express');
-const logger = require('morgan');
-const fs = require('fs');
-
 import dotenv from 'dotenv';
+import fs from 'fs';
+import Fastify from 'fastify';
+import elasticsearchPlugin from './plugins/elasticsearch.js';
+import jwtPlugin from './plugins/jwt.js';
+import sensiblePlugin from './plugins/sensible.js';
+import hubRoutes from './routes/hub.js';
+import promptRoutes from './routes/prompt.js';
+import rootRoutes from './routes/root.js';
+import searchRoutes from './routes/search.js';
+import similarRoutes from './routes/similar.js';
+import suggestionsRoutes from './routes/suggestions.js';
 
-dotenv.config({path: '.env'});
+dotenv.config({ path: '.env' });
 
 if (process.env.APP_KEY_FILE) {
   const data = fs.readFileSync(process.env.APP_KEY_FILE);
 
-  process.env["APP_KEY"] = data.toString().trim();
+  process.env['APP_KEY'] = data.toString().trim();
 }
 
-// Create a new express application instance
-const app: express.Application = express();
+const fastify = Fastify({
+  logger: true,
+  ignoreTrailingSlash: true,
+});
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+fastify.register(elasticsearchPlugin);
+fastify.register(jwtPlugin);
+fastify.register(sensiblePlugin);
+fastify.register(hubRoutes);
+fastify.register(rootRoutes);
+fastify.register(suggestionsRoutes);
+fastify.register(similarRoutes);
+fastify.register(promptRoutes);
+fastify.register(searchRoutes);
 
-import SuggestionController from './routes/suggestions';
-import HubController from './routes/hub';
-import HealtcheckController from './routes/healtcheck';
-import SearchController from './routes/search';
-import PromptController from "./routes/prompt";
-import SimilarController from "./routes/similiar";
-
-app.use('/', new SuggestionController().router);
-app.use('/hub', new HubController().router);
-app.use('/search', new SearchController().router);
-app.use('/prompt', new PromptController().router);
-app.use('/healtcheck', new HealtcheckController().router);
-app.use('/similar', new SimilarController().router);
-
-const server = app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`));
-
-const shutdown = () => {
-  console.log("Gracefully stopping server...");
-
-  server.close(() => console.log(`server stopped`));
+const start = async () => {
+  try {
+    await fastify.listen({ port: 3500 });
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
 };
 
-process.on('SIGHUP', shutdown);
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+void start();

@@ -23,7 +23,7 @@ const getOptions = (suggestions: elasticsearch.Suggestion[] | null): Hit[] => {
 export default (result: ElasticsearchResult, user?: Jwt): Hit[] => {
   const context = ContextFactory.make(user?.iss ?? null);
 
-  return [...getOptions(result.suggest?.user_suggestions), ...getOptions(result.suggest.all_suggestions)]
+  return [...getOptions(result.suggest?.user_suggestions), ...getOptions(result.suggest?.all_suggestions)]
     .reduce((filtered: Hit[], current) => {
       if (!filtered.some(x => x.id == current.id)) {
         filtered.push(current);

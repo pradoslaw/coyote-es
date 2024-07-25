@@ -5,6 +5,7 @@ import { ElasticsearchResult } from "../types/elasticsearch";
 import jwtHandler from '../jwt';
 import client from '../elasticsearch';
 import transform from '../transformers/hub';
+import { Request as JWTRequest } from "express-jwt";
 
 export default class HubController {
   public router = express.Router();
@@ -13,12 +14,12 @@ export default class HubController {
     this.router.get('/', jwtHandler(true), this.getSuggestions);
   }
 
-  getSuggestions = asyncHandler(async (req: express.Request, res: express.Response) => {
-    const params = new HubBuilder(req.user!.iss!).build();
+  getSuggestions = asyncHandler(async (req: JWTRequest, res: express.Response) => {
+    const params = new HubBuilder(parseInt(req.auth!.iss!)).build();
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;
 
-    res.send(transform(body, req.user!));
+    res.send(transform(body, req.auth!));
   });
 }

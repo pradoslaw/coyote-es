@@ -1,6 +1,7 @@
 import esb from 'elastic-builder';
 import { Model } from '../types/model';
 import { Builder } from './builder';
+import {JwtPayload} from "jsonwebtoken";
 
 export const SCORE = 'score';
 export const DATE = 'date';
@@ -45,9 +46,9 @@ const FRAGMENT_SIZE = 255;
 
 export default class SearchBuilder extends Builder {
   private options: SearchOptions;
-  private readonly jwt?: Jwt;
+  private readonly jwt?: JwtPayload;
 
-  constructor(options: SearchOptions, jwt?: Jwt) {
+  constructor(options: SearchOptions, jwt?: JwtPayload) {
     super()
 
     this.options = options;

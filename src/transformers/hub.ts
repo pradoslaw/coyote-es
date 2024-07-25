@@ -2,9 +2,10 @@ import * as elasticsearch from "../types/elasticsearch";
 import ContextFactory from "./context";
 import Hit from '../types/hit';
 import allowed from "./allowed";
+import {JwtPayload} from "jsonwebtoken";
 
-export default (result: elasticsearch.ElasticsearchResult, user: Jwt) => {
-  const context = ContextFactory.make(user.iss!);
+export default (result: elasticsearch.ElasticsearchResult, user: JwtPayload) => {
+  const context = ContextFactory.make(user.iss! as unknown as number);
 
   return result.hits.hits
     .map(hit => {

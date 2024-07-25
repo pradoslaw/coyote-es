@@ -10,6 +10,7 @@ import { Model } from"../types/model";
 import InputAnalyzer from '../analyzers';
 import transform from '../transformers/hits';
 import suggestionsTransformer from '../transformers/suggestions';
+import {Request as JWTRequest} from "express-jwt";
 
 export default class SearchController {
   public router = express.Router();
@@ -18,10 +19,10 @@ export default class SearchController {
     this.router.get('/', jwtHandler(false), this.validationRules, this.getResults);
   }
 
-  getResults = asyncHandler(async (req: express.Request, res: express.Response) => {
+  getResults = asyncHandler(async (req: JWTRequest, res: express.Response) => {
     validationResult(req).throw();
 
-    const params = new SearchBuilder(await this.getOptions(req.query), req.user).build();
+    const params = new SearchBuilder(await this.getOptions(req.query), req.auth).build();
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;

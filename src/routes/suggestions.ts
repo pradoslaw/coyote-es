@@ -7,6 +7,7 @@ import { SuggestionsBuilder } from '../builders/suggestions';
 import { ElasticsearchResult } from '../types/elasticsearch';
 import transform from "../transformers/suggestions";
 import { Model } from"../types/model";
+import { Request as JWTRequest } from "express-jwt";
 
 export default class SuggestionController {
   public router = express.Router();
@@ -15,17 +16,17 @@ export default class SuggestionController {
     this.router.get('/', jwtHandler(false), this.validationRules, this.getSuggestions);
   }
 
-  getSuggestions = asyncHandler(async (req: express.Request, res: express.Response) => {
+  getSuggestions = asyncHandler(async (req: JWTRequest, res: express.Response) => {
     validationResult(req).throw();
 
-    const params = new SuggestionsBuilder({prefix: req.query.q, userId: req.user?.iss, models: req.query?.model}).build();
+    const params = new SuggestionsBuilder({prefix: req.query.q, userId: req.auth?.iss as unknown as number, models: req.query?.model}).build();
     const result = await client.search(params);
 
     const body: ElasticsearchResult = result.body;
 
     console.log(`Response time for "${req.query.q}": ${body.took} ms`);
 
-    res.send(transform(body, req.user));
+    res.send(transform(body, req.auth));
   });
 
   get validationRules() {

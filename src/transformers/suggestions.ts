@@ -3,6 +3,7 @@ import Hit from '../types/hit';
 import ContextFactory from "./context";
 import { ElasticsearchResult } from "../types/elasticsearch";
 import allowed from "./allowed";
+import {JwtPayload} from "jsonwebtoken";
 
 const getOptions = (suggestions: elasticsearch.Suggestion[] | null): Hit[] => {
   let result: Hit[] = [];
@@ -20,8 +21,8 @@ const getOptions = (suggestions: elasticsearch.Suggestion[] | null): Hit[] => {
   return result;
 };
 
-export default (result: ElasticsearchResult, user?: Jwt): Hit[] => {
-  const context = ContextFactory.make(user?.iss ?? null);
+export default (result: ElasticsearchResult, user?: JwtPayload): Hit[] => {
+  const context = ContextFactory.make(user?.iss as unknown as number);
 
   return [...getOptions(result.suggest?.user_suggestions), ...getOptions(result.suggest?.all_suggestions)]
     .reduce((filtered: Hit[], current) => {

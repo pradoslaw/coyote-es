@@ -37,7 +37,7 @@ test('build with query and jwt', () => {
 });
 
 test('build with query and user and jwt', () => {
-  const builder = new SearchBuilder({query: 'test', userId: 1}, {iss: 1, allowed: [1]});
+  const builder = new SearchBuilder({query: 'test', userId: 1}, {iss: '1', allowed: [1]});
   const json = builder.build().body;
 
   // @ts-ignore
